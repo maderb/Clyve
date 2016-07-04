@@ -1,0 +1,14 @@
+body{
+	background-color:white;
+}
+
+#signin_panel{
+	position:absolute;
+	top:50%;
+	left:50%;
+	background-color:white;
+	border:solid gray 2px;
+	height:25em;
+	width:40em;
+	transform:translate(-50%,-50%);
+}

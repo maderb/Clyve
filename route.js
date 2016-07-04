@@ -10,6 +10,11 @@ app.get('/clyve',function(req,res){
 	res.sendfile('public/index.html',{root:__dirname});
 });
 
+app.post('/clyve',function(req,res){
+	console.log('POST Request Recieved');
+	res.sendfile('public/game/game.html',{root:__dirname});
+});
+
 app.use(express.static(__dirname + '/public'));
 
 app.listen(app.get('port'), function(){
