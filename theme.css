@@ -1,0 +1,29 @@
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/mader\/Desktop\/CS290\/HowTo\/theme\.scss}line{font-family:\000036}}
+body {
+  position: absolute;
+  background-color: #FFF;
+  width: 100%; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/mader\/Desktop\/CS290\/HowTo\/theme\.scss}line{font-family:\0000311}}
+  body #titlebox {
+    font-size: 5vmin;
+    color: #999;
+    background-color: #000;
+    padding: 10vmin;
+    text-align: center; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/mader\/Desktop\/CS290\/HowTo\/theme\.scss}line{font-family:\0000319}}
+  body #bodyfield {
+    padding-left: 12vmin;
+    padding-right: 12vmin; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/mader\/Desktop\/CS290\/HowTo\/theme\.scss}line{font-family:\0000324}}
+    body #bodyfield .bodyheader {
+      padding-top: 5vmin;
+      font-size: 3vmin; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/mader\/Desktop\/CS290\/HowTo\/theme\.scss}line{font-family:\0000328}}
+    body #bodyfield .bodycontent {
+      font-size: 2vmin; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/mader\/Desktop\/CS290\/HowTo\/theme\.scss}line{font-family:\0000335}}
+  body .indent {
+    display: inline;
+    padding-left: 5vmin; }
+
+/*# sourceMappingURL=theme.css.map */
