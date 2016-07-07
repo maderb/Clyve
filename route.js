@@ -14,9 +14,15 @@ app.get('/clyve',function(req,res){
 });
 
 app.post('/clyve',function(req,res){
-	console.log('Connection Request:\nUsername:'+ req.body.username +'\nPassword:' + req.body.userpw);
-	res.setHeader('Content-Type','text/plain');
-	res.end('VERIFIED');
+	var validity=0;
+	
+	if(req.body.username && req.body.userpw){
+		validity=1;
+	}
+	
+	res.setHeader('Content-Type','application/json');
+	res.write(JSON.stringify({'status':validity}));
+	res.end();
 });
 
 app.use(express.static(__dirname + '/public'));
