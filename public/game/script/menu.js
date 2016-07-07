@@ -1,3 +1,5 @@
+var authenticated = false;
+
 $(document).ready(function(){
 	
 	$("#login").click(function(req){
@@ -11,7 +13,8 @@ $(document).ready(function(){
 					document.getElementById("status_box").innerHTML="Failed to successfully authenticate user.";
 				}
 				else{
-					document.body.innerHTML = '<div ID="home">Home</div>';
+					authenticated=true;
+					document.body.innerHTML = '<div ID="home"></div>';
 				}
 			}
 		});
