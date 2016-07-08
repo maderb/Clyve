@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var mysql = require('mysql');
 
 var app=express();
 app.set('port',3000);
@@ -14,6 +15,16 @@ app.get('/clyve',function(req,res){
 });
 
 app.post('/clyve',function(req,res){
+	//connect to user database
+	var conn = mysql.createConnection({
+		host : 'eldritch.csgnyqkchfnk.us-west-2.rds.amazonaws.com',
+		user : 'bmader23',
+		password : 'Bm950343317!',
+		database : 'ClyvePlayer'
+	});
+	conn.connect();
+	
+	
 	var validity=0;
 	
 	if(req.body.username && req.body.userpw){
