@@ -31,6 +31,7 @@ public/game/menu.html: Provides framework for login menu for user authentication
 public/game/script/game_main.js: Provides the primary game loop and routing to pertinent information for the client to operate.
 
 public/game/script/menu.js: Provides scripting information for menu animations and communication with the server.
+
 ---
 ####PUBLIC/GAME/STYLE FOLDER
 
