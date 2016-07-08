@@ -1,3 +1,5 @@
+
+//Listens for keys to be pressed and routes to appropriate function on keypress
 document.addEventListener('keypress',function(e){
 	if(authenticated==true){
 		var key=e.which||e.keyCode;

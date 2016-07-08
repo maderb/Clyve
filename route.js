@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var mysql = require('mysql');
 
 var app=express();
+
 app.set('port',3000);
 
 app.set('view engine','jade');
@@ -24,19 +25,22 @@ app.post('/clyve',function(req,res){
 	});
 	conn.connect();
 	
-	
 	var validity=0;
 	
+	//if username and userpw passed in are a valid pair, validity=1
 	if(req.body.username && req.body.userpw){
 		validity=1;
 	}
 	
+	//send response as json.
 	res.setHeader('Content-Type','application/json');
 	res.write(JSON.stringify({'status':validity}));
 	res.end();
 });
 
+//Allows use of static files in public file.
 app.use(express.static(__dirname + '/public'));
 
+//Listen on previously defined port.
 app.listen(app.get('port'), function(){
         console.log( 'Express started on http://localhost:' + app.get('port') + ' press Ctrl-C to exit' );});

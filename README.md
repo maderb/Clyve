@@ -1,8 +1,11 @@
 # Clyve
 
-####MAIN FOLDER
+####MAIN FOLDER: Contains README and Node.js script (route.js).
 
 route.js : Node.js routing file for incoming traffic. 
+GET "/clyve": Gets a copy of 'index.html' and loads 'menu.html' into display box to initiate.
+POST "/clyve": Processes username and password and responds with validity of user input. Currently outputs 'true'
+for all username/password pairs (non null).
 	Temporarily:
 	Currently allows access to contents of public directory, which is not limited to specific moderated traffic.
 	

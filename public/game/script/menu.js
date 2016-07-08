@@ -2,6 +2,9 @@ var authenticated = false;
 
 $(document).ready(function(){
 	
+	
+	//Listens for login button to be clicked and clears body to load game if successful.
+	//If unsuccessful, outputs error message to status_box element.
 	$("#login").click(function(req){
 		$.post({
 			url:'/clyve',
