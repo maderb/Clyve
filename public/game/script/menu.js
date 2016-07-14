@@ -18,6 +18,7 @@ $(document).ready(function(){
 				else{
 					authenticated=true;
 					document.body.innerHTML = '<div ID="home"></div>';
+					document.body.innerHTML += '<div ID="player"></div>'
 				}
 			}
 		});
