@@ -1,4 +1,6 @@
-	var moveIncrement=1;
+$(document).ready(function(){
+	var moveXIncrement=.6;
+	var moveYIncrement=moveXIncrement*($("#game_panel").width() / $("#game_panel").height());
 	var leftMove=false,rightMove=false,upMove=false,downMove=false;
 	var x=50,y=50;
 
@@ -74,18 +76,20 @@
 	});
 
 	setInterval(function(){
+		
 		if(document.getElementById("player")){
 			if(x<99 && leftMove==false && rightMove==true)
-				x+=moveIncrement;
+				x+=moveXIncrement;
 			else if(x>1 && leftMove==true && rightMove==false)
-				x-=moveIncrement;
-			if(y<99 && downMove==true && upMove==false){
-				y+=moveIncrement;
+				x-=moveXIncrement;
+			if(y<94 && downMove==true && upMove==false){
+				y+=moveYIncrement;
 			}
-			else if(y>1 && downMove==false && upMove==true){
-				y-=moveIncrement;
+			else if(y>6 && downMove==false && upMove==true){
+				y-=moveYIncrement;
 			}
 			document.getElementById("player").style.left=x+"%";
 			document.getElementById("player").style.top=y+"%";
 		}
 	},30);
+});
