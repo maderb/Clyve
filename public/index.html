@@ -1,13 +1,27 @@
-</DOCTYPE HTML>
-
 <HTML>
 <HEAD>
 	<TITLE>CLYVE</TITLE>
 	<META CHARSET="UTF-8"/>
 	<LINK REL="stylesheet" TYPE="text/css" HREF="main.css" />
+	<LINK REL="stylesheet" TYPE="text/css" HREF="game/style/menu.css"/>
+	<LINK TYPE="text/css" REL="stylesheet" HREF="game/style/game_main.css"/>
+	<SCRIPT SRC="game/script/jquery.js"></SCRIPT>
+	<SCRIPT SRC="game/script/menu.js"></SCRIPT>
+	<SCRIPT SRC="game/script/game_main.js"></SCRIPT>
 </HEAD>
 <BODY>
 	<DIV ID="title_bar"><h1>Clyve</h1></DIV>
-	<IFRAME SRC="game/menu.html" ID="game_panel"></IFRAME>
+	<DIV ID="game_panel">
+		<TABLE ID="signin_panel">
+			<TR><TD colspan="2"><H1 ID="logo">Clyve</H1><TD></TR>
+			<TR><TD colspan="2">Username:</TD></TR>
+			<TR><TD colspan="2"><INPUT TYPE="text" id="username"></INPUT></TD></TR>
+			<TR><TD colspan="2">Password:</TD></TR>
+			<TR><TD colspan="2"><INPUT TYPE="password" id="userpw"></INPUT></TD></TR>
+			<TR><TD colspan="2"><BUTTON TYPE="submit" ID="login">LOGIN</BUTTON></TD></TR>
+			<TR><TD ID="status_box" COLSPAN="2"></TD></TR>
+			<TR><TD><a href="">I Forgot My Username</a></TD><TD><a href="">I Forgot My Password</a></TD></TR>
+		</TABLE>
+	</DIV>
 </BODY>
 </HTML>

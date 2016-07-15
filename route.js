@@ -33,9 +33,19 @@ app.post('/clyve',function(req,res){
 	}
 	
 	//send response as json.
-	res.setHeader('Content-Type','application/json');
-	res.write(JSON.stringify({'status':validity}));
-	res.end();
+	if(validity!=1){
+		res.setHeader('Content-Type','application/json');
+		res.write(JSON.stringify({'status':validity}));
+		res.end();
+	}else{
+		res.setHeader('Content-Type','application/json');
+		res.write(JSON.stringify({'status':validity,'HTML':"teststring"}));
+		res.end();
+	}
+});
+
+app.get('/playClyve',function(req,res){
+	res.sendFile('public/game/game.html',{root:__dirname});
 });
 
 //Allows use of static files in public file.
