@@ -83,7 +83,6 @@
 				y+=moveIncrement;
 			}
 			else if(y>1 && downMove==false && upMove==true){
-				console.log("up");
 				y-=moveIncrement;
 			}
 			document.getElementById("player").style.left=x+"%";
