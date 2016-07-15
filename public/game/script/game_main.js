@@ -5,7 +5,6 @@
 	//Listens for keys to be pressed and routes to appropriate function on keypress
 	document.addEventListener('keypress',function(e){
 			var key=e.which||e.keyCode;
-			console.log(key);
 			switch(key){
 				case 37:
 					leftMove=true;
