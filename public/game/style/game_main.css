@@ -25,6 +25,7 @@
 }
 #hotkey TR TD{
 	border-radius:50%;
+	background-color:white;
 	border:solid black 1px;
 	width:3em;
 	height:3em;
