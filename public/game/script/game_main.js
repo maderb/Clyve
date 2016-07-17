@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	//horizontal speed and adjusted vertical speed according to aspect ratio.
-	var moveXIncrement=.4;
+	var moveXIncrement=.6;
 	var moveYIncrement=moveXIncrement*($("#game_panel").width() / $("#game_panel").height());
 	
 	//tracks current status of directional buttons.
@@ -17,31 +17,31 @@ $(document).ready(function(){
 	}
 	
 	//Constructor for straightRobot class
-	function straightRobot(){
+	function straightRobot(xPosition,yPosition){
 		this.name="straightRobot";
 	}
 	
 	//constructor for disarmRobot class
-	function disarmRobot(){
+	function disarmRobot(xPosition,yPosition){
 		this.name="disarmRobot";
 	}
 	
 	//constructor for zigRobot class
-	function zigRobot(){
+	function zigRobot(xPosition,yPosition){
 		this.name="zigRobot";
 	}
 	
 	//Function for creating robots. Takes string containing type to be created and returns status=0 if failed.
-	function createRobot(robotName){
+	function createRobot(robotName,xPosition,yPosition){
 		switch(robotName){
 			case "straightRobot":
-				robots.straightRobots+=new straightRobot();
+				robots.straightRobots+=new straightRobot(xPosition,yPosition);
 				return true;
 			case "disarmRobot":
-				robots.disarmRobots+=new disarmRobot();
+				robots.disarmRobots+=new disarmRobot(xPosition,yPosition);
 				return true;
 			case "zigRobot":
-				robots.zigRobots+=zigRobot;
+				robots.zigRobots+= new zigRobot(xPosition,yPosition);
 				return true;
 		}
 		return false;
@@ -70,9 +70,10 @@ $(document).ready(function(){
 		tower.style.left = x+"%";
 		tower.style.top = y+"%";
 		tower.style.transform = "translate(-50%,-50%)"
+		
+		//create as color block to show place
 		tower.style.backgroundColor = "green";
 	}
-	
 	function gunTower(){
 		this.towerName="gunTower";
 		this.xPos=x;
@@ -90,7 +91,6 @@ $(document).ready(function(){
 		tower.style.transform = "translate(-50%,-50%)"
 		tower.style.backgroundColor = "blue";
 	}
-	
 	function flameTower(){
 		this.towerName="flameTower";
 		this.xPos=x;
