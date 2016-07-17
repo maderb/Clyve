@@ -32,8 +32,8 @@ $(document).ready(function(){
 	}
 	
 	//Function for creating robots. Takes string containing type to be created and returns status=0 if failed.
-	function createRobot(typeName){
-		switch(typeName){
+	function createRobot(robotName){
+		switch(robotName){
 			case "straightRobot":
 				robots.straightRobots+=new straightRobot();
 				return true;
@@ -49,22 +49,77 @@ $(document).ready(function(){
 	
 	//DEFINE TOWERS
 	var towers={
-		mines:[],
+		mineTowers:[],
 		gunTowers:[],
 		flameTowers:[]
+	}
+		
+	//Define tower constructors and creator function
+	function mineTower(){
+		this.towerName="mineTower";
+		this.xPos=x;
+		this.yPos=y;
+		
+		console.log("create mineTower"+towers.mineTowers.length);
+		var tower = document.createElement("DIV");
+		tower.id=this.towerName + towers.mineTowers.length;
+		document.getElementById("game_panel").appendChild(tower);
+		tower.style.position = "absolute";
+		tower.style.height = "2em";
+		tower.style.width = "1em";
+		tower.style.left = x+"%";
+		tower.style.top = y+"%";
+		tower.style.transform = "translate(-50%,-50%)"
+		tower.style.backgroundColor = "green";
+	}
+	
+	function gunTower(){
+		this.towerName="gunTower";
+		this.xPos=x;
+		this.yPos=y;
+		
+		console.log("create gunTower"+towers.gunTowers.length);
+		var tower = document.createElement("DIV");
+		tower.id=this.towerName + towers.gunTowers.length;
+		document.getElementById("game_panel").appendChild(tower);
+		tower.style.position = "absolute";
+		tower.style.height = "2em";
+		tower.style.width = "1em";
+		tower.style.left = x+"%";
+		tower.style.top = y+"%";
+		tower.style.transform = "translate(-50%,-50%)"
+		tower.style.backgroundColor = "blue";
+	}
+	
+	function flameTower(){
+		this.towerName="flameTower";
+		this.xPos=x;
+		this.yPos=y;
+		
+		console.log("create flameTower"+towers.flameTowers.length);
+		var tower = document.createElement("DIV");
+		tower.id=this.towerName + towers.flameTowers.length;
+		document.getElementById("game_panel").appendChild(tower);
+		tower.style.position = "absolute";
+		tower.style.height = "2em";
+		tower.style.width = "1em";
+		tower.style.left = x+"%";
+		tower.style.top = y+"%";
+		tower.style.transform = "translate(-50%,-50%)"
+		tower.style.backgroundColor = "purple";
 	}
 	
 	//Hub function for creation of new towers. Takes argument of string type and returns status 1 if valid input.
 	function createTower(typeName){
 		switch(typeName){
-			case "mine":
-				
+			case "mineTower":
+				towers.mineTowers += new mineTower();
 				return true;
 			case "gunTower":
-				
+				towers.gunTowers += new gunTower();
 				return true;
 			case "flameTower":
-	
+				towers.gunTowers += new flameTower();
 				return true;
 		}
 		return false;
@@ -93,13 +148,13 @@ $(document).ready(function(){
 					upMove=true;
 					break;
 				case 49:
-					createRobot("straightRobot");
+					createTower("mineTower");
 					break;
 				case 50:
-					createRobot("disarmRobot");
+					createTower("gunTower");
 					break;
 				case 51:
-					createRobot("zigRobot");
+					createTower("flameTower");
 					break;
 				case 52:
 					break;
