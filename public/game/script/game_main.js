@@ -192,7 +192,6 @@ $(document).ready(function(){
 	function playerMove(){
 		if(document.getElementById("player")){
 			if(x<99 && leftMove==false && rightMove==true){
-				console.log("right");
 				x+=moveXIncrement;
 			}
 			else if(x>1 && leftMove==true && rightMove==false){
