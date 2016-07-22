@@ -134,6 +134,7 @@ $(document).ready(function(){
 	//Listens for keys to be pressed and routes to appropriate function on keypress
 	document.addEventListener('keypress',function(e){
 		var key=e.which||e.keyCode;
+		console.log(key);
 		switch(key){
 			case 37:
 				leftMove=true;
@@ -191,10 +192,13 @@ $(document).ready(function(){
 	//Updates player object position
 	function playerMove(){
 		if(document.getElementById("player")){
-			if(x<99 && leftMove==false && rightMove==true)
+			if(x<99 && leftMove==false && rightMove==true){
+				console.log("right");
 				x+=moveXIncrement;
-			else if(x>1 && leftMove==true && rightMove==false)
+			}
+			else if(x>1 && leftMove==true && rightMove==false){
 				x-=moveXIncrement;
+			}
 			if(y<94 && downMove==true && upMove==false){
 				y+=moveYIncrement;
 			}
