@@ -18,7 +18,7 @@ $(document).ready(function(){
 		},30);	
 
 		//Listens for keys to be pressed and routes to appropriate function on keypress
-		document.addEventListener('keypress',function(e){
+		document.addEventListener('keydown',function(e){
 			var key=e.which||e.keyCode;
 			switch(key){
 				case 37:
