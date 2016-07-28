@@ -11,7 +11,7 @@ function Clyve (type) {
 }
 
 //Next few functions move clyve right, left, up and down.
-clyve.prototype.moveR = function() {
+Clyve.prototype.moveR = function() {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(x < 99){ //check that clyve is not in the rightmost positions
@@ -19,7 +19,7 @@ clyve.prototype.moveR = function() {
 	}
 };
 
-clyve.prototype.moveL = function() {
+Clyve.prototype.moveL = function() {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(x > 1){ //check that clyve is not in the leftmost positions
@@ -27,7 +27,7 @@ clyve.prototype.moveL = function() {
 	}
 };
 
-clyve.prototype.moveD = function() {
+Clyve.prototype.moveD = function() {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(y < 94){ //check that clyve is not in the lowest positions
@@ -35,7 +35,7 @@ clyve.prototype.moveD = function() {
 	}
 };
 
-clyve.prototype.moveU = function() {
+Clyve.prototype.moveU = function() {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(y > 6){ //check that clyve is not in the uppermost positions
@@ -59,10 +59,10 @@ zbot.prototype.move = function() {
 	if(this.movNum == 0 || this.movNum == 7 || (this.movNum > 2 && this.movNum < 5)){//move up
 		this.loc = [x, y-1];//fix ratio
 	}
-	else if (this.movNum > 0 && < 3){//move left
+	else if (this.movNum > 0 && this.movNum < 3){//move left
 		this.loc = [x-1, y];//fix ratio
 	}
-	else if (this.movNum > 4 && < 7){//move right
+	else if (this.movNum > 4 && this.movNum < 7){//move right
 		this.loc = [x+1, y];//fix ratio
 	}
 	this.movNum += 1;
@@ -157,14 +157,14 @@ function flameTower(x, y){
 //uses: gamestate.p.moveR() to move right etc...
 function Gamestate (type) {
 	this.type = type;
-	var home = 3; //This is the home's hitpoints. 
-	var p = new Clyve;
-	var robots={
+	this.home = 3; //This is the home's hitpoints. 
+	this.p = new Clyve("player");
+	this.robots={
 		sbots:[],
 		disbots:[],
 		zbots:[]
 	}
-	var towers={
+	this.towers={
 		mineTowers:[],
 		gunTowers:[],
 		flameTowers:[]

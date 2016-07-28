@@ -47,6 +47,9 @@ app.post('/clyve',function(req,res){
 app.get('/playClyve',function(req,res){
 	res.sendFile('public/game/game.html',{root:__dirname});
 });
+app.get('/objects',function(req,res){
+	res.sendFile('public/game/script/clyveObjectsRef.js',{root:__dirname});
+});
 
 //Allows use of static files in public file.
 app.use(express.static(__dirname + '/public'));
