@@ -60,7 +60,7 @@ $(document).ready(function(){
 		this.xPos=x;
 		this.yPos=y;
 		
-		console.log("create mineTower"+towers.mineTowers.length);
+		console.log("create mineTower: "+towers.mineTowers.length);
 		var tower = document.createElement("DIV");
 		tower.id=this.towerName + towers.mineTowers.length;
 		document.getElementById("game_panel").appendChild(tower);
@@ -79,7 +79,7 @@ $(document).ready(function(){
 		this.xPos=x;
 		this.yPos=y;
 		
-		console.log("create gunTower"+towers.gunTowers.length);
+		console.log("create gunTower: "+towers.gunTowers.length);
 		var tower = document.createElement("DIV");
 		tower.id=this.towerName + towers.gunTowers.length;
 		document.getElementById("game_panel").appendChild(tower);
@@ -96,7 +96,7 @@ $(document).ready(function(){
 		this.xPos=x;
 		this.yPos=y;
 		
-		console.log("create flameTower"+towers.flameTowers.length);
+		console.log("create flameTower: "+towers.flameTowers.length);
 		var tower = document.createElement("DIV");
 		tower.id=this.towerName + towers.flameTowers.length;
 		document.getElementById("game_panel").appendChild(tower);
