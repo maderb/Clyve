@@ -1,5 +1,5 @@
 $.getScript("/objects", function(){
-	
+$.getScript("/tracker",function(){
 
 $(document).ready(function(){
 		//horizontal speed and adjusted vertical speed according to aspect ratio.
@@ -98,4 +98,5 @@ $(document).ready(function(){
 			}
 		}
 	});
+});
 });

@@ -1,3 +1,5 @@
+var tracker=require("./public/game/script/saveTracker.js");
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
@@ -16,19 +18,13 @@ app.get('/clyve',function(req,res){
 });
 
 app.post('/clyve',function(req,res){
-	//connect to user database
-	/*var conn = mysql.createConnection({
-		host : 'eldritch.csgnyqkchfnk.us-west-2.rds.amazonaws.com',
-		user : 'bmader23',
-		password : 'Bm950343317!',
-		database : 'ClyvePlayer'
-	});
-	conn.connect();
-	conn.end();*/
+	
+	//Test opening saved file with call from saveTracker.js.
+	tracker.parseFile("./testfile.txt");
 	
 	var validity=0;
 	
-	//if username and userpw passed in are a valid pair, validity=1
+	//If username and userpw passed in are a valid pair, validity=1
 	if(req.body.username && req.body.userpw){
 		validity=1;
 	}
@@ -50,6 +46,9 @@ app.get('/playClyve',function(req,res){
 });
 app.get('/objects',function(req,res){
 	res.sendFile('public/game/script/clyveObjectsRef.js',{root:__dirname});
+});
+app.get('/tracker',function(req,res){
+	res.sendFile('public/game/script/saveTracker.js',{root:__dirname});
 });
 
 //Allows use of static files in public file.
