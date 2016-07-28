@@ -99,14 +99,14 @@ disbot.prototype.move = function() {
 //Define tower constructors and creator (function kept this mostly the same for compatability with your ui but maybe should split it up a bit...)
 //updated to pass in x,y though not 100% sure that is correct yet... temp.
 function mineTower(x, y, gs){
-	this.towerName="mineTower";
+	this.towerName="mineTower"+gs.towers.mineTowers.length;
 	this.xPos=x;
 	this.yPos=y;
 	
 	//likely have to sepperate these parts...107-119 as well as the other towers
 	console.log("create mineTower"+gs.towers.mineTowers.length);
 	var tower = document.createElement("DIV");
-	tower.id=this.towerName + gs.towers.mineTowers.length;
+	tower.id = this.towerName;
 	document.getElementById("game_panel").appendChild(tower);
 	tower.style.position = "absolute";
 	tower.style.height = "2em";
@@ -119,13 +119,13 @@ function mineTower(x, y, gs){
 	tower.style.backgroundColor = "green";
 }
 function gunTower(x, y, gs){
-	this.towerName="gunTower";
+	this.towerName="gunTower"+gs.towers.gunTowers.length;
 	this.xPos=x;
 	this.yPos=y;
 	
-	console.log("create gunTower"+gs.towers.gunTowers.length);
+	console.log("create "+this.towerName);
 	var tower = document.createElement("DIV");
-	tower.id=this.towerName + gs.towers.gunTowers.length;
+	tower.id=this.towerName;
 	document.getElementById("game_panel").appendChild(tower);
 	tower.style.position = "absolute";
 	tower.style.height = "2em";
@@ -136,13 +136,13 @@ function gunTower(x, y, gs){
 	tower.style.backgroundColor = "blue";
 }
 function flameTower(x, y, gs){
-	this.towerName="flameTower";
+	this.towerName="flameTower"+gs.towers.flameTowers.length;
 	this.xPos=x;
 	this.yPos=y;
 	
-	console.log("create flameTower"+gs.towers.flameTowers.length);
+	console.log("create "+this.towerName);
 	var tower = document.createElement("DIV");
-	tower.id=this.towerName + gs.towers.flameTowers.length;
+	tower.id=this.towerName;
 	document.getElementById("game_panel").appendChild(tower);
 	tower.style.position = "absolute";
 	tower.style.height = "2em";
