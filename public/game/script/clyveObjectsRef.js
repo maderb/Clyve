@@ -209,7 +209,7 @@ Gamestate.prototype.genTower = function(typeName) {
 				this.towers.gunTowers += new gunTower(posx, posy, this);
 				return true;
 			case "flameTower":
-				this.towers.gunTowers += new flameTower(posx, posy, this);
+				this.towers.flameTowers += new flameTower(posx, posy, this);
 				return true;
 		}
 		return false;
