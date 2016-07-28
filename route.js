@@ -24,6 +24,7 @@ app.post('/clyve',function(req,res){
 		database : 'ClyvePlayer'
 	});
 	conn.connect();
+	conn.end();
 	
 	var validity=0;
 	
