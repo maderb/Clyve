@@ -198,22 +198,31 @@ Gamestate.prototype.genBots = function(robotName, posx, posy) {
 //gamestate function to create robots.
 //updated to pass in x, y
 Gamestate.prototype.genTower = function(typeName) {
-	if(this.p.scrapCnt > 0){//if clyve has the scraps
 		var posx = this.p.loc[0];
 		var posy = this.p.loc[1];		
 		switch(typeName){
 			case "mineTower":
-				this.towers.mineTowers += new mineTower(posx, posy, this);
-				return true;
+				if(this.p.scrapCnt > 0){//if clyve has the scraps
+					this.towers.mineTowers += new mineTower(posx, posy, this);
+					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+					return true;
+				}
+				break;
 			case "gunTower":
-				this.towers.gunTowers += new gunTower(posx, posy, this);
-				return true;
+				if(this.p.scrapCnt > 0){//if clyve has the scraps
+					this.towers.gunTowers += new gunTower(posx, posy, this);
+					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+					return true;
+				}
+				break;
 			case "flameTower":
-				this.towers.flameTowers += new flameTower(posx, posy, this);
-				return true;
+				if(this.p.scrapCnt > 0){//if clyve has the scraps
+					this.towers.flameTowers += new flameTower(posx, posy, this);
+					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+					return true;
+				}
 		}
 		return false;
-	}
 };
 
 //gamestate function to move bots
