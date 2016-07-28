@@ -1,4 +1,4 @@
-var tracker=require("./public/game/script/saveTracker.js");
+var tracker=require("./node_modules/saveTracker.js");
 
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -20,7 +20,8 @@ app.get('/clyve',function(req,res){
 app.post('/clyve',function(req,res){
 	
 	//Test opening saved file with call from saveTracker.js.
-	tracker.parseFile("./testfile.txt");
+	if(tracker.parseFile("./testfile.txt"))
+		console.log("No save file available to open.");
 	
 	var validity=0;
 	
