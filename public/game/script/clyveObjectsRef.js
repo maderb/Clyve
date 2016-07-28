@@ -11,35 +11,35 @@ function Clyve (type) {
 }
 
 //Next few functions move clyve right, left, up and down.
-Clyve.prototype.moveR = function() {
+Clyve.prototype.moveR = function(Inc) {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(x < 99){ //check that clyve is not in the rightmost positions
-		this.loc = [x+.6,y];//"moving"
+		this.loc = [x+Inc,y];//"moving"
 	}
 };
 
-Clyve.prototype.moveL = function() {
+Clyve.prototype.moveL = function(Inc) {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(x > 1){ //check that clyve is not in the leftmost positions
-		this.loc = [x-.6,y];//"moving"
+		this.loc = [x-Inc,y];//"moving"
 	}
 };
 
-Clyve.prototype.moveD = function() {
+Clyve.prototype.moveD = function(Inc) {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(y < 94){ //check that clyve is not in the lowest positions
-		this.loc[x,y+1] = 1;//"moving" moveXIncrement*($("#game_panel").width() / $("#game_panel").height()) in source atm... test first...
+		this.loc=[x,y+Inc];//"moving" moveXIncrement*($("#game_panel").width() / $("#game_panel").height()) in source atm... test first...
 	}
 };
 
-Clyve.prototype.moveU = function() {
+Clyve.prototype.moveU = function(Inc) {
 	var x = this.loc[0];
 	var y = this.loc[1];	
 	if(y > 6){ //check that clyve is not in the uppermost positions
-		this.loc[x,y-1] = 1;//"moving"
+		this.loc=[x,y-Inc];//"moving"
 	}
 };
 
@@ -229,7 +229,7 @@ Gamestate.prototype.robotMove = function() {
 	}
 };
 
-//gamestate function settting timer for generating and moving bots
+//gamestate function setting timer for generating and moving bots
 Gamestate.prototype.gobot = function() {
 	//set a timer to...
 		//every 15th(balance stuff here...)time... random number 1-6 makes straight bot, 7-9 makes zig bots, 10-11 makes disarm bots

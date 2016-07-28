@@ -15,7 +15,7 @@ $(document).ready(function(){
 		//GAME LOOP: REFRESH RATE 33hz
 		setInterval(function(){
 			playerMove();
-			robotMove();
+			gs.robotMove();
 		},30);	
 
 		//Listens for keys to be pressed and routes to appropriate function on keypress
@@ -81,37 +81,20 @@ $(document).ready(function(){
 		//Updates player object position
 		function playerMove(){
 			if(document.getElementById("player")){
-				if(gs.p.loc[0]<99 && leftMove==false && rightMove==true){
-					gs.p.loc[0]+=moveXIncrement;
-					console.log(gs.p.loc[0]);
+				if(leftMove==false && rightMove==true){
+					gs.p.moveR(moveXIncrement);
 				}
-				else if(gs.p.loc[0]>1 && leftMove==true && rightMove==false){
-					gs.p.loc[0]-=moveXIncrement;
-					console.log(gs.p.loc[0]);
+				if(leftMove==true && rightMove==false){
+					gs.p.moveL(moveXIncrement);
 				}
-				if(gs.p.loc[1]<94 && downMove==true && upMove==false){
-					gs.p.loc[1]+=moveYIncrement;
-					console.log(gs.p.loc[1]);
+				if(downMove==true && upMove==false){
+					gs.p.moveD(moveYIncrement);
 				}
-				else if(gs.p.loc[1]>6 && downMove==false && upMove==true){
-					gs.p.loc[1]-=moveYIncrement;
-					console.log(gs.p.loc[1]);
+				if(downMove==false && upMove==true){
+					gs.p.moveU(moveYIncrement);
 				}
 				document.getElementById("player").style.left=gs.p.loc[0]+"%";
 				document.getElementById("player").style.top=gs.p.loc[1]+"%";
-			}
-		}
-		
-		//Move all robots according to specified AI functions.
-		function robotMove(){
-			for(var i=0;i<gs.robots.sbots.length;i++){
-				//add movement algorithm here for straightRobots
-			}
-			for(var i=0;i<gs.robots.disbots.length;i++){
-				//add movement information here for disarmRobots
-			}
-			for(var i=0;i<gs.robots.zbots.length;i++){
-				//add movement information here for zigRobots
 			}
 		}
 	});
