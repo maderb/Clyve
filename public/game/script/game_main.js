@@ -96,5 +96,21 @@ $(document).ready(function(){
 				document.getElementById("player").style.top=gs.p.loc[1]+"%";
 			}
 		}
+		
+		$("#save_file").click(function(req){
+			console.log("click");
+			$.post({
+				url:'/saveFile',
+				contentType:"application/json",
+				data:JSON.stringify({"userid":username,"userpw":password}),
+				success:function(data,status){
+					if(data.status==1){
+						console.log("File saved.");
+					}else{
+						console.log("Failed to submit save request.");
+					}
+				}
+			});
+		});
 	});
 });

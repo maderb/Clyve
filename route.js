@@ -26,7 +26,7 @@ app.post('/clyve',function(req,res){
 	var validity=0;
 	
 	//If username and userpw passed in are a valid pair, validity=1
-	if(req.body.username && req.body.userpw){
+	if(req.body.userid && req.body.userpw){
 		validity=1;
 	}
 	
@@ -51,6 +51,11 @@ app.get('/objects',function(req,res){
 app.get('/tracker',function(req,res){
 	res.sendFile('public/game/script/saveTracker.js',{root:__dirname});
 });
+app.post('/saveFile',function(req,res){
+	console.log("Username: " + req.body.username);
+	console.log("Password: " + req.body.password);
+});
+
 
 //Allows use of static files in public file.
 app.use(express.static(__dirname + '/public'));
