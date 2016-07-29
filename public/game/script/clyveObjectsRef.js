@@ -50,6 +50,19 @@ function zbot (x, y) {
 	this.name = "zbot";
 	this.loc = [x, y];
 	this.movNum = 0; //incremented to determine how the bot moves.
+	
+	var bot = document.createElement("DIV");
+	bot.id = this.towerName;
+	document.getElementById("game_panel").appendChild(bot);
+	bot.style.position = "absolute";
+	bot.style.height = "2em";
+	bot.style.width = "1em";
+	bot.style.left = x;
+	bot.style.top = y;
+	bot.style.transform = "translate(-50%,-50%)"
+	
+	//create as color block to show place
+	bot.style.backgroundColor = "green";
 }
 
 //zbot move function moves in a boxy s shape. needs refactoring for smoother moves
@@ -72,6 +85,19 @@ zbot.prototype.move = function() {
 function sbot (x, y) {
 	this.name = "sbot";
 	this.loc = [x, y];
+	
+	var bot = document.createElement("DIV");
+	bot.id = this.towerName;
+	document.getElementById("game_panel").appendChild(bot);
+	bot.style.position = "absolute";
+	bot.style.height = "2em";
+	bot.style.width = "1em";
+	bot.style.left = x;
+	bot.style.top = y;
+	bot.style.transform = "translate(-50%,-50%)"
+	
+	//create as color block to show place
+	bot.style.backgroundColor = "pink";
 }
 
 //sbot moves along a straight path
@@ -89,16 +115,16 @@ function disbot (x, y) {
 	
 	var bot = document.createElement("DIV");
 	bot.id = this.towerName;
-	document.getElementById("game_panel").appendChild(tower);
-	tower.style.position = "absolute";
-	tower.style.height = "2em";
-	tower.style.width = "1em";
-	tower.style.left = x+"%";
-	tower.style.top = y+"%";
-	tower.style.transform = "translate(-50%,-50%)"
+	document.getElementById("game_panel").appendChild(bot);
+	bot.style.position = "absolute";
+	bot.style.height = "2em";
+	bot.style.width = "1em";
+	bot.style.left = x;
+	bot.style.top = y;
+	bot.style.transform = "translate(-50%,-50%)"
 	
 	//create as color block to show place
-	tower.style.backgroundColor = "green";
+	bot.style.backgroundColor = "yellow";
 }
 
 //disbot moves along a straight path 
