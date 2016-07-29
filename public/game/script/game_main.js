@@ -20,7 +20,7 @@ $.getScript("/objects", function(){
 				playerMove();
 				gs.robotMove();
 				if(document.getElementById("player"))
-					robotEngine(gs.difficulty);
+					robotEngine(gs.difficulty,gs);
 			},30);	
 
 			//Listens for keys to be pressed and routes to appropriate function on keypress

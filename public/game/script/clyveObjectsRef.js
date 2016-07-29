@@ -86,6 +86,19 @@ sbot.prototype.move = function() {
 function disbot (x, y) {
 	this.name = "disbot";
 	this.loc = [x, y];
+	
+	var bot = document.createElement("DIV");
+	bot.id = this.towerName;
+	document.getElementById("game_panel").appendChild(tower);
+	tower.style.position = "absolute";
+	tower.style.height = "2em";
+	tower.style.width = "1em";
+	tower.style.left = x+"%";
+	tower.style.top = y+"%";
+	tower.style.transform = "translate(-50%,-50%)"
+	
+	//create as color block to show place
+	tower.style.backgroundColor = "green";
 }
 
 //disbot moves along a straight path 
@@ -184,13 +197,13 @@ Gamestate.prototype.isLost = function() {
 Gamestate.prototype.genBots = function(robotName, posx, posy) {
 	switch(robotName){
 		case "sbot":
-			robots.ssbots+=new sbot(posx, posy);
+			this.robots.sbots[this.robots.sbots.length]=new sbot(posx, posy);
 			return true;
 		case "disbot":
-			robots.disbots+=new disbot(posx, posy);
+			this.robots.disbots[this.robots.disbots.length]=new disbot(posx, posy);
 			return true;
 		case "zbot":
-			robots.zbot+= new zbot(posx, posy);
+			this.robots.zbots[this.robots.zbots.length]= new zbot(posx, posy);
 			return true;
 	}
 	return false;
@@ -272,9 +285,40 @@ Gamestate.prototype.gobot = function() {
 	}
 };
 
-function robotEngine(difficulty){
+function robotEngine(difficulty,gs){
 	var random = Math.random(0);
 	if(random<=difficulty){
-		console.log("Create Robot.");
+		var genSide = Math.floor(Math.random()*4);
+		var randPerc = (Math.random()*100+1)+"%";
+		switch(genSide){
+			case 0://create robot along top edge
+				randomRobot(randPerc,"0%",gs);
+				return;
+			case 1://create robot along right edge
+				randomRobot("100%",randPerc,gs);
+				return;
+			case 2://create robot along bottom edge
+				randomRobot(randPerc,"100%",gs);
+				return;
+			case 3://create robot along left edge
+				randomRobot("0%",randPerc,gs);
+				return;
+		}
+	}
+}
+
+function randomRobot(leftPerc,topPerc,gs){
+	var roboType = Math.floor(Math.random()*3);
+	console.log("create bot " + roboType + "at: "+leftPerc+ ", " +topPerc);
+	switch(roboType){
+		case 0:
+			gs.genBots("sbot",leftPerc,topPerc);
+			return;
+		case 1:
+			gs.genBots("disbot",leftPerc,topPerc);
+			return;
+		case 2:
+			gs.genBots("zbot",leftPerc,topPerc);
+			return;
 	}
 }
