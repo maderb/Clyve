@@ -1,8 +1,8 @@
 var username="";
 var password="";
 
-$.getScript("/objects", function(){
 $.getScript("/menu", function(){
+$.getScript("/objects", function(){
 
 	$(document).ready(function(){
 			//horizontal speed and adjusted vertical speed according to aspect ratio.
@@ -19,6 +19,8 @@ $.getScript("/menu", function(){
 			setInterval(function(){
 				playerMove();
 				gs.robotMove();
+				if(document.getElementById("player"))
+					robotEngine(gs.difficulty);
 			},30);	
 
 			//Listens for keys to be pressed and routes to appropriate function on keypress

@@ -6,7 +6,7 @@
 //****************************************************************************
 function Clyve (type) {
 	this.type = type;
-	this.loc = [50, 50];
+	this.loc = [50, 60];
 	this.scrapCnt = 4; //starting amount of scraps, may change as game gets balanced.
 }
 
@@ -157,7 +157,8 @@ function flameTower(x, y, gs){
 //uses: gamestate.p.moveR() to move right etc...
 function Gamestate (type) {
 	this.type = type;
-	this.home = 3; //This is the home's hitpoints. 
+	this.home = 3; //This is the home's hitpoints.
+	this.difficulty = .007; //higher=more difficult
 	this.p = new Clyve("player");
 	this.robots={
 		sbots:[],
@@ -270,3 +271,10 @@ Gamestate.prototype.gobot = function() {
 		}
 	}
 };
+
+function robotEngine(difficulty){
+	var random = Math.random(0);
+	if(random<=difficulty){
+		console.log("Create Robot.");
+	}
+}

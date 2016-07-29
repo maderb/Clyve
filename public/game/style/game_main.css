@@ -1,12 +1,12 @@
 #home{
 	position:absolute;
 	left:50%;
-	top:20%;
+	top:50%;
 	width:3em;
 	height:3.75em;
 	background-color:black;
 	color:white;
-	transform:translate(-50%,0%);
+	transform:translate(-50%,-50%);
 }
 
 #player{

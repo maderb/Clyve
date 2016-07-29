@@ -20,8 +20,8 @@ app.get('/clyve',function(req,res){
 app.post('/clyve',function(req,res){
 	
 	//Test opening saved file with call from saveTracker.js.
-	if(tracker.parseFile("./testfile.txt"))
-		console.log("No save file available to open.");
+	//if(tracker.parseFile("./testfile.txt"))
+	//	console.log("No save file available to open.");
 	
 	var validity=0;
 	
