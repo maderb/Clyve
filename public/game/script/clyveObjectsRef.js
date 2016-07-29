@@ -156,8 +156,6 @@ function flameTower(x, y, gs){
 //the gamestate with all objects combined
 //uses: gamestate.p.moveR() to move right etc...
 function Gamestate (type) {
-	this.username="";
-	this.password="";
 	this.type = type;
 	this.home = 3; //This is the home's hitpoints. 
 	this.p = new Clyve("player");

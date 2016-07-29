@@ -1,6 +1,4 @@
 var authenticated = false;
-var username="";
-var password="";
 
 $(document).ready(function(){
 	

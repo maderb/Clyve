@@ -37,7 +37,7 @@ app.post('/clyve',function(req,res){
 		res.end();
 	}else{
 		res.setHeader('Content-Type','application/json');
-		res.write(JSON.stringify({'status':validity,'HTML':"teststring"}));
+		res.write(JSON.stringify({'status':validity}));
 		res.end();
 	}
 });
@@ -48,12 +48,17 @@ app.get('/playClyve',function(req,res){
 app.get('/objects',function(req,res){
 	res.sendFile('public/game/script/clyveObjectsRef.js',{root:__dirname});
 });
+app.get('/menu',function(req,res){
+	res.sendFile('public/game/script/menu.js',{root:__dirname});
+});
 app.get('/tracker',function(req,res){
 	res.sendFile('public/game/script/saveTracker.js',{root:__dirname});
 });
 app.post('/saveFile',function(req,res){
-	console.log("Username: " + req.body.username);
-	console.log("Password: " + req.body.password);
+	tracker.saveFile(req.body.userid+".txt");
+	res.setHeader('Content-Type','application/json');
+	res.write(JSON.stringify({'status':1}));
+	res.end();
 });
 
 
