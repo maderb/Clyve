@@ -203,21 +203,21 @@ Gamestate.prototype.genTower = function(typeName) {
 		switch(typeName){
 			case "mineTower":
 				if(this.p.scrapCnt > 0){//if clyve has the scraps
-					this.towers.mineTowers += new mineTower(posx, posy, this);
+					this.towers.mineTowers[this.towers.mineTowers.length] = new mineTower(posx, posy, this);
 					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "gunTower":
 				if(this.p.scrapCnt > 0){//if clyve has the scraps
-					this.towers.gunTowers += new gunTower(posx, posy, this);
+					this.towers.gunTowers[this.towers.mineTowers.length] = new gunTower(posx, posy, this);
 					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "flameTower":
 				if(this.p.scrapCnt > 0){//if clyve has the scraps
-					this.towers.flameTowers += new flameTower(posx, posy, this);
+					this.towers.flameTowers[this.towers.mineTowers.length] = new flameTower(posx, posy, this);
 					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
 					return true;
 				}
