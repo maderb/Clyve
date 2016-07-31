@@ -49,10 +49,12 @@ Clyve.prototype.moveU = function(Inc) {
 function zbot (x, y) {
 	this.name = "zbot";
 	this.loc = [x, y];
-	this.movNum = 0; //incremented to determine how the bot moves.
+	this.movNum = 0; //incremented to note zigging
+	this.zig = 0; //zig up or down
+	this.section = 2; //pie bot is in (0: top/bottom or 1: left/right, 2: default disabled.)
 	
 	var bot = document.createElement("DIV");
-	bot.id = this.towerName;
+	bot.id = this.name;
 	document.getElementById("game_panel").appendChild(bot);
 	bot.style.position = "absolute";
 	bot.style.height = "2em";
@@ -65,21 +67,118 @@ function zbot (x, y) {
 	bot.style.backgroundColor = "green";
 }
 
+//divides the map into 4 sections and finds the zbot to check for orientation of zigging (leftright vs updown) 
+//might need some tidying... starting with upper and lower bounds then checking left right.. cuts lines in half
+zbot.prototype.findSec = function() {
+	var x = this.loc[0];
+	var y = this.loc[1];
+	var tempX = Number(x.slice(0, x.length - 1));
+	var tempY = Number(y.slice(0, y.length - 1));	
+	if(tempX > 50){//right half
+		if(tempY<tempX){//upper bound right quarter
+			if(tempY>(100-tempX))//lower bound right quarter
+				this.section = 1;
+			else
+				this.section = 0;
+		}
+		else
+			this.section = 0;
+	}
+	else{
+		if(tempY<(100-tempX)){//upper bound
+			if(tempY>tempX)//lower bound
+				this.section = 1;
+			else
+				this.section = 0;
+		}
+		else 
+			this.section = 0;
+	}
+};
+
 //zbot move function moves in a boxy s shape. needs refactoring for smoother moves
 zbot.prototype.move = function() {
 	var x = this.loc[0];
 	var y = this.loc[1];
-	if(this.movNum == 0 || this.movNum == 7 || (this.movNum > 2 && this.movNum < 5)){//move up
-		this.loc = [x, y-1];//fix ratio
+	var tempX = Number(x.slice(0, x.length - 1));
+	var tempY = Number(y.slice(0, y.length - 1));
+	//checking for section (first time only)
+	if(this.section == 2){
+		this.findSec();
 	}
-	else if (this.movNum > 0 && this.movNum < 3){//move left
-		this.loc = [x-1, y];//fix ratio
+	if(tempX > 50 && tempY > 50){
+		x = (tempX - 1) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+	}	
+	else if(tempX < 50 && tempY > 50){
+		x = (tempX + 1) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
 	}
-	else if (this.movNum > 4 && this.movNum < 7){//move right
-		this.loc = [x+1, y];//fix ratio
+	else if(tempX < 50 && tempY < 50){
+		x = (tempX + 1) + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
 	}
-	this.movNum += 1;
-	if(this.movNum > 7) this.movNum = 0; //reset move counter
+	else if(tempX > 50 && tempY < 50){
+		x = (tempX - 1) + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+	}
+	else if(tempX < 50){
+		x = (tempX + 1) + "%";
+		y = tempY + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+	}
+	else if(tempY < 50){
+		x = tempX + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("X: " + x + " Moved Y: " + y);
+	}
+	else if(tempX > 50){
+		x = (tempX - 1) + "%";
+		y = tempY + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+	}
+	else if(tempY > 50){
+		x = (tempX) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("X: " + x + " Moved Y: " + y);
+	}
+	//doing the zigging 
+	if(this.section == 0){
+		if(this.zig == 0)//move left
+			x = (tempX - 1) + "%";
+		else if(this.zig == 1)//move right
+			x = (tempX + 1) + "%";		
+	}
+	else if(this.section == 1){
+		if(this.Zzig == 0){//move down
+			y = (tempY - 1) + "%";
+		}
+		else if(this.zig == 1){//move up
+			x = (tempX - 1) + "%";
+		}			
+	}		
+	if(this.movNum > 3){//incrementing directional counters 
+		if(this.zig == 1){
+			this.zig = 0;
+				y = (tempY  1) + "%";
+		else
+			this.zig = 1;
+	}
+	this.movNum = (this.movNum % 3) + 1;
+	this.loc = [x, y];
+	}
 };
 //straight bot: charges straight in
 function sbot (x, y) {
@@ -101,11 +200,71 @@ function sbot (x, y) {
 }
 
 //sbot moves along a straight path
-sbot.prototype.move = function() {
+sbot.prototype.move = function(){
 	var x = this.loc[0];
 	var y = this.loc[1];
-	//discuss implementation for house. Do we want it only in center, if so, bots need to move inwards as they get closer...
-	this.loc = [x, y-1];//fix ratio
+	//console.log("X: " + x + " Y: " + y);
+	var tempX = Number(x.slice(0, x.length - 1));
+	var tempY = Number(y.slice(0, y.length - 1));
+	if(tempX > 50 && tempY > 50){
+		x = (tempX - 1) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}	
+	else if(tempX < 50 && tempY > 50){
+		x = (tempX + 1) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}
+	else if(tempX < 50 && tempY < 50){
+		x = (tempX + 1) + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}
+	else if(tempX > 50 && tempY < 50){
+		x = (tempX - 1) + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}
+	else if(tempX < 50){
+		x = (tempX + 1) + "%";
+		y = tempY + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		//console.log("Moving bot");
+	}
+	else if(tempY < 50){
+		x = tempX + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("X: " + x + " Moved Y: " + y);
+		//console.log("Moving bot");
+	}
+	else if(tempX > 50){
+		x = (tempX - 1) + "%";
+		y = tempY + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);	
+		//console.log("Moving bot");
+	}
+	else if(tempY > 50){
+		x = (tempX) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("X: " + x + " Moved Y: " + y);	
+		//console.log("Moving bot");
+	}
+	/*not sure about this....
+	this.bot.style.left = x;
+	this.bot.style.top = y;*/
 };
 
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
@@ -132,7 +291,64 @@ disbot.prototype.move = function() {
 	var x = this.loc[0];
 	var y = this.loc[1];
 	//discuss implementation for house/bots. Do we want it only in center, if so, bots need to move inwards as they get closer...
-	this.loc = [x, y-1];//fix ratio
+	var tempX = Number(x.slice(0, x.length - 1));
+	var tempY = Number(y.slice(0, y.length - 1));
+	if(tempX > 50 && tempY > 50){
+		x = (tempX - 1) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}	
+	else if(tempX < 50 && tempY > 50){
+		x = (tempX + 1) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}
+	else if(tempX < 50 && tempY < 50){
+		x = (tempX + 1) + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}
+	else if(tempX > 50 && tempY < 50){
+		x = (tempX - 1) + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		console.log("Moving bot");
+	}
+	else if(tempX < 50){
+		x = (tempX + 1) + "%";
+		y = tempY + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);
+		//console.log("Moving bot");
+	}
+	else if(tempY < 50){
+		x = tempX + "%";
+		y = (tempY + 1) + "%";
+		this.loc = [x, y];
+		//console.log("X: " + x + " Moved Y: " + y);
+		//console.log("Moving bot");
+	}
+	else if(tempX > 50){
+		x = (tempX - 1) + "%";
+		y = tempY + "%";
+		this.loc = [x, y];
+		//console.log("Moved X: " + x + " Y: " + y);	
+		//console.log("Moving bot");
+	}
+	else if(tempY > 50){
+		x = (tempX) + "%";
+		y = (tempY - 1) + "%";
+		this.loc = [x, y];
+		//console.log("X: " + x + " Moved Y: " + y);	
+		//console.log("Moving bot");
+	}
 };
 
 //Define tower constructors and creator (function kept this mostly the same for compatability with your ui but maybe should split it up a bit...)
@@ -278,37 +494,24 @@ Gamestate.prototype.robotMove = function() {
 	}
 };
 
-//gamestate function setting timer for generating and moving bots
-Gamestate.prototype.gobot = function() {
-	//set a timer to...
-		//every 15th(balance stuff here...)time... random number 1-6 makes straight bot, 7-9 makes zig bots, 10-11 makes disarm bots
-			//timing is variable to increase difficulty? maybe sepperate to make more differentiation between difficulty levels...
-		//move bots 
-};
-
-//gamestate function to check for mine/bot proximity
+//gamestate function to check for mine/bot proximity detonate bombs break bots
 //currently only testing for minetower proximity...
-Gamestate.prototype.gobot = function() {
-	for(var i=0;i<this.robots.disbots.length;i++){
+Gamestate.prototype.prox = function() {
+	var expMine[]
+	var i;
+	for(i=0;i<this.robots.disbots.length;i++){
 		for(var j=0;j<this.towers.mineTowers.length;j++){//adjust for proximity not exact location...
 			if(this.robots.disbots[i].loc[0] == this.towers.mineTowers[j].xPos && this.robots.disbots[i].loc[1] == this.towers.mineTowers[j].yPos){
-				//delete the bot 
-				
-				//gain scraps
-				this.p.scrapCnt += 1;
+				//add mine to the delete array for later in case it hits multiple bots
+				//expMine[expMine.length] = this.towers.mineTowers[j];
+				//this.robots.disbots[i].explode();
 			}
 		}
 	}
-	for(var i=0;i<this.robots.disbots.length;i++){
-		for(var j=0;j<this.towers.mineTowers.length;j++){
-			//repeat above
-		}
-	}
-	for(var i=0;i<this.robots.disbots.length;i++){
-		for(var j=0;j<this.towers.mineTowers.length;j++){
-			//repeat above
-		}
-	}
+	//deleting triggered mines
+	/*for(i = 0; i <expMine.length; i++)... delete each bot in expMine[i]*/
+	//gain scraps
+	this.p.scrapCnt += 1;
 };
 
 function robotEngine(difficulty,gs){
@@ -334,7 +537,7 @@ function robotEngine(difficulty,gs){
 }
 
 function randomRobot(leftPerc,topPerc,gs){
-	var roboType = Math.floor(Math.random()*3);
+	var roboType = Math.floor(Math.random()*1);//changed to only allow single bots temp.
 	console.log("create bot " + roboType + "at: "+leftPerc+ ", " +topPerc);
 	switch(roboType){
 		case 0:
