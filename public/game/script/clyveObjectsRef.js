@@ -533,7 +533,7 @@ Gamestate.prototype.robotMove = function() {
 	}
 	for(var i=0;i<this.robots.disbots.length;i++){
 		if(this.robots.disbots[i].move()){
-			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
+			while((i+1) < this.robots.disbots.length){this.robots.disbots[i]=this.robots.disbots[++i];}
 			this.robots.disbots.length--;
 		}
 	}
