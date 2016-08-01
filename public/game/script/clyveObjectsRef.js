@@ -184,7 +184,7 @@ zbot.prototype.move = function() {
 //straight bot: charges straight in
 function sbot (x, y, gs) {
 	
-	this.towerName = "sbot" + gs.robots.sbots.length;
+	this.towerName = "sbot" + gs.totalRobots[0]++;
 	this.loc = [x, y];
 	
 	var bot = document.createElement("DIV");
@@ -220,7 +220,7 @@ sbot.prototype.move = function(){
 	if(run<0) run *= -1;
 	
 	if( (rise<=1) && (run <= 1 ) ){
-		console.log("HOME");
+		return 1;
 	}
 	else if(quadrant!=-1){
 		if( (rise/run) < 1 ){
@@ -267,6 +267,7 @@ sbot.prototype.move = function(){
 	
 	document.getElementById(this.towerName).style.left = x;
 	document.getElementById(this.towerName).style.top = y;
+	return 0;
 };
 
 sbot.prototype.quadrantFinder=function(x,y){
@@ -287,7 +288,7 @@ sbot.prototype.quadrantFinder=function(x,y){
 
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
 function disbot (x, y, gs) {
-	this.towerName = "disbot"+gs.robots.disbots.length;
+	this.towerName = "disbot"+gs.totalRobots[1]++;
 	this.loc = [x, y];
 	
 	var bot = document.createElement("DIV");
@@ -324,7 +325,7 @@ disbot.prototype.move = function() {
 	if(run<0) run *= -1;
 	
 	if( (rise<=1) && (run <= 1 ) ){
-		console.log("HOME");
+		return 1;
 	}
 	else if(quadrant!=-1){
 		if( (rise/run) < 1 ){
@@ -371,6 +372,7 @@ disbot.prototype.move = function() {
 	
 	document.getElementById(this.towerName).style.left = x;
 	document.getElementById(this.towerName).style.top = y;
+	return 0;
 };
 
 disbot.prototype.quadrantFinder=function(x,y){
@@ -392,12 +394,12 @@ disbot.prototype.quadrantFinder=function(x,y){
 //Define tower constructors and creator (function kept this mostly the same for compatability with your ui but maybe should split it up a bit...)
 //updated to pass in x,y though not 100% sure that is correct yet... temp.
 function mineTower(x, y, gs){
-	this.towerName="mineTower"+gs.towers.mineTowers.length;
+	this.towerName="mineTower"+gs.totalTowers[0]++;
 	this.xPos=x;
 	this.yPos=y;
 	
 	//likely have to sepperate these parts...107-119 as well as the other towers
-	console.log("create mineTower"+gs.towers.mineTowers.length);
+	console.log("create " +this.towerName );
 	var tower = document.createElement("DIV");
 	tower.id = this.towerName;
 	document.getElementById("game_panel").appendChild(tower);
@@ -412,7 +414,7 @@ function mineTower(x, y, gs){
 	tower.style.backgroundColor = "green";
 }
 function gunTower(x, y, gs){
-	this.towerName="gunTower"+gs.towers.gunTowers.length;
+	this.towerName="gunTower"+gs.totalTowers[1]++;
 	this.xPos=x;
 	this.yPos=y;
 	
@@ -429,7 +431,7 @@ function gunTower(x, y, gs){
 	tower.style.backgroundColor = "blue";
 }
 function flameTower(x, y, gs){
-	this.towerName="flameTower"+gs.towers.flameTowers.length;
+	this.towerName="flameTower"+gs.totalTowers[2]++;
 	this.xPos=x;
 	this.yPos=y;
 	
@@ -451,13 +453,15 @@ function flameTower(x, y, gs){
 function Gamestate (type) {
 	this.type = type;
 	this.home = 3; //This is the home's hitpoints.
-	this.difficulty = .2; //higher=more difficult
+	this.difficulty = .01; //higher=more difficult
 	this.p = new Clyve("player");
+	this.totalRobots=[0,0,0];
 	this.robots={
 		sbots:[],
 		disbots:[],
 		zbots:[]
 	}
+	this.totalTowers=[0,0,0];
 	this.towers={
 		mineTowers:[],
 		gunTowers:[],
@@ -522,13 +526,22 @@ Gamestate.prototype.genTower = function(typeName) {
 //gamestate function to move bots
 Gamestate.prototype.robotMove = function() {
 	for(var i=0;i<this.robots.sbots.length;i++){
-		this.robots.sbots[i].move();
+		if(this.robots.sbots[i].move()){
+			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
+			this.robots.sbots.length--;
+		}
 	}
 	for(var i=0;i<this.robots.disbots.length;i++){
-		this.robots.disbots[i].move();		
+		if(this.robots.disbots[i].move()){
+			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
+			this.robots.disbots.length--;
+		}
 	}
 	for(var i=0;i<this.robots.zbots.length;i++){
-		this.robots.zbots[i].move();
+		if(this.robots.zbots[i].move()){
+			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
+			this.robots.zbots.length--;
+		}
 	}
 };
 /*
