@@ -100,6 +100,7 @@ zbot.prototype.findSec = function() {
 zbot.prototype.move = function() {
 	var x = this.loc[0];
 	var y = this.loc[1];
+	/*
 	var tempX = Number(x.slice(0, x.length - 1));
 	var tempY = Number(y.slice(0, y.length - 1));
 	//checking for section (first time only)
@@ -178,11 +179,12 @@ zbot.prototype.move = function() {
 	}
 	this.movNum = (this.movNum % 3) + 1;
 	this.loc = [x, y];
-	}
+	}*/
 };
 //straight bot: charges straight in
-function sbot (x, y) {
-	this.name = "sbot";
+function sbot (x, y, gs) {
+	
+	this.towerName = "sbot" + gs.robots.sbots.length;
 	this.loc = [x, y];
 	
 	var bot = document.createElement("DIV");
@@ -203,73 +205,89 @@ function sbot (x, y) {
 sbot.prototype.move = function(){
 	var x = this.loc[0];
 	var y = this.loc[1];
+	
 	//console.log("X: " + x + " Y: " + y);
 	var tempX = Number(x.slice(0, x.length - 1));
 	var tempY = Number(y.slice(0, y.length - 1));
-	if(tempX > 50 && tempY > 50){
-		x = (tempX - 1) + "%";
-		y = (tempY - 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
-	}	
-	else if(tempX < 50 && tempY > 50){
-		x = (tempX + 1) + "%";
-		y = (tempY - 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
+	
+	var quadrant=this.quadrantFinder(tempX,tempY);
+	var moveRatio;
+	
+	var rise = tempY - 50;
+	var run = tempX - 50;
+	
+	if(rise<0) rise *= -1;
+	if(run<0) run *= -1;
+	
+	if( (rise<=1) && (run <= 1 ) ){
+		console.log("HOME");
 	}
-	else if(tempX < 50 && tempY < 50){
-		x = (tempX + 1) + "%";
-		y = (tempY + 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
+	else if(quadrant!=-1){
+		if( (rise/run) < 1 ){
+			moveRatio = rise/run;
+			moveY = moveRatio / (moveRatio + 1);
+			moveX = 1 - moveY;
+		}
+		else{
+			moveRatio = run/rise;
+			moveX = moveRatio / (moveRatio + 1);
+			moveY = 1 - moveX;
+		}
+		
+		switch(quadrant){
+			case 1:
+				moveX*=-1;
+				moveY*=-1;
+			case 2:
+				moveX*=-1;
+			case 3:
+				moveX*=-1;
+				moveY*=-1;
+		}
 	}
-	else if(tempX > 50 && tempY < 50){
-		x = (tempX - 1) + "%";
-		y = (tempY + 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
+	else if(rise==0){
+		if(tempX==0){
+			moveX=1;
+		}else{
+			moveX=-1;
+		}
+		moveY=0;
 	}
-	else if(tempX < 50){
-		x = (tempX + 1) + "%";
-		y = tempY + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		//console.log("Moving bot");
+	else if(run==0){
+		if(tempY==0)
+			moveY=1;
+		else
+			moveY=-1;
+		moveX = 0;
 	}
-	else if(tempY < 50){
-		x = tempX + "%";
-		y = (tempY + 1) + "%";
-		this.loc = [x, y];
-		//console.log("X: " + x + " Moved Y: " + y);
-		//console.log("Moving bot");
-	}
-	else if(tempX > 50){
-		x = (tempX - 1) + "%";
-		y = tempY + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);	
-		//console.log("Moving bot");
-	}
-	else if(tempY > 50){
-		x = (tempX) + "%";
-		y = (tempY - 1) + "%";
-		this.loc = [x, y];
-		//console.log("X: " + x + " Moved Y: " + y);	
-		//console.log("Moving bot");
-	}
-	/*not sure about this....
-	this.bot.style.left = x;
-	this.bot.style.top = y;*/
+	
+	x = (tempX + moveX) + "%";
+	y = (tempY + moveY) + "%";
+	this.loc = [x, y];
+	
+	document.getElementById(this.towerName).style.left = x;
+	document.getElementById(this.towerName).style.top = y;
 };
 
+sbot.prototype.quadrantFinder=function(x,y){
+	if(x > 50 && y > 50){
+		return 3;
+	}	
+	else if(x < 50 && y > 50){
+		return 2;
+	}
+	else if(x < 50 && y < 50){
+		return 0;
+	}
+	else if(x > 50 && y < 50){
+		return 1;
+	}
+	return -1;
+}
+
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
-function disbot (x, y) {
-	this.name = "disbot";
+function disbot (x, y, gs) {
+	this.towerName = "disbot"+gs.robots.disbots.length;
 	this.loc = [x, y];
 	
 	var bot = document.createElement("DIV");
@@ -288,68 +306,88 @@ function disbot (x, y) {
 
 //disbot moves along a straight path 
 disbot.prototype.move = function() {
+	var speed = .5;
 	var x = this.loc[0];
 	var y = this.loc[1];
-	//discuss implementation for house/bots. Do we want it only in center, if so, bots need to move inwards as they get closer...
+	
+	//console.log("X: " + x + " Y: " + y);
 	var tempX = Number(x.slice(0, x.length - 1));
 	var tempY = Number(y.slice(0, y.length - 1));
-	if(tempX > 50 && tempY > 50){
-		x = (tempX - 1) + "%";
-		y = (tempY - 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
-	}	
-	else if(tempX < 50 && tempY > 50){
-		x = (tempX + 1) + "%";
-		y = (tempY - 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
+	
+	var quadrant=this.quadrantFinder(tempX,tempY);
+	var moveRatio;
+	
+	var rise = tempY - 50;
+	var run = tempX - 50;
+	
+	if(rise<0) rise *= -1;
+	if(run<0) run *= -1;
+	
+	if( (rise<=1) && (run <= 1 ) ){
+		console.log("HOME");
 	}
-	else if(tempX < 50 && tempY < 50){
-		x = (tempX + 1) + "%";
-		y = (tempY + 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
+	else if(quadrant!=-1){
+		if( (rise/run) < 1 ){
+			moveRatio = rise/run;
+			moveY = (moveRatio / (moveRatio + 1)) * speed;
+			moveX = (1 - moveY) * speed;
+		}
+		else{
+			moveRatio = run/rise;
+			moveX = (moveRatio / (moveRatio + 1)) * speed;
+			moveY = (1 - moveX) * speed;
+		}
+		
+		switch(quadrant){
+			case 1:
+				moveX*=-1;
+				moveY*=-1;
+			case 2:
+				moveX*=-1;
+			case 3:
+				moveX*=-1;
+				moveY*=-1;
+		}
 	}
-	else if(tempX > 50 && tempY < 50){
-		x = (tempX - 1) + "%";
-		y = (tempY + 1) + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		console.log("Moving bot");
+	else if(rise==0){
+		if(tempX==0){
+			moveX=speed;
+		}else{
+			moveX=-1*speed;
+		}
+		moveY=0;
 	}
-	else if(tempX < 50){
-		x = (tempX + 1) + "%";
-		y = tempY + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);
-		//console.log("Moving bot");
+	else if(run==0){
+		if(tempY==0)
+			moveY=speed;
+		else
+			moveY=-1*speed;
+		moveX = 0;
 	}
-	else if(tempY < 50){
-		x = tempX + "%";
-		y = (tempY + 1) + "%";
-		this.loc = [x, y];
-		//console.log("X: " + x + " Moved Y: " + y);
-		//console.log("Moving bot");
-	}
-	else if(tempX > 50){
-		x = (tempX - 1) + "%";
-		y = tempY + "%";
-		this.loc = [x, y];
-		//console.log("Moved X: " + x + " Y: " + y);	
-		//console.log("Moving bot");
-	}
-	else if(tempY > 50){
-		x = (tempX) + "%";
-		y = (tempY - 1) + "%";
-		this.loc = [x, y];
-		//console.log("X: " + x + " Moved Y: " + y);	
-		//console.log("Moving bot");
-	}
+	
+	x = (tempX + moveX) + "%";
+	y = (tempY + moveY) + "%";
+	this.loc = [x, y];
+	
+	document.getElementById(this.towerName).style.left = x;
+	document.getElementById(this.towerName).style.top = y;
 };
+
+disbot.prototype.quadrantFinder=function(x,y){
+	if(x > 50 && y > 50){
+		return 3;
+	}	
+	else if(x < 50 && y > 50){
+		return 2;
+	}
+	else if(x < 50 && y < 50){
+		return 0;
+	}
+	else if(x > 50 && y < 50){
+		return 1;
+	}
+	return -1;
+}
 
 //Define tower constructors and creator (function kept this mostly the same for compatability with your ui but maybe should split it up a bit...)
 //updated to pass in x,y though not 100% sure that is correct yet... temp.
@@ -413,7 +451,7 @@ function flameTower(x, y, gs){
 function Gamestate (type) {
 	this.type = type;
 	this.home = 3; //This is the home's hitpoints.
-	this.difficulty = .007; //higher=more difficult
+	this.difficulty = .2; //higher=more difficult
 	this.p = new Clyve("player");
 	this.robots={
 		sbots:[],
@@ -439,10 +477,10 @@ Gamestate.prototype.isLost = function() {
 Gamestate.prototype.genBots = function(robotName, posx, posy) {
 	switch(robotName){
 		case "sbot":
-			this.robots.sbots[this.robots.sbots.length]=new sbot(posx, posy);
+			this.robots.sbots[this.robots.sbots.length]=new sbot(posx, posy, this);
 			return true;
 		case "disbot":
-			this.robots.disbots[this.robots.disbots.length]=new disbot(posx, posy);
+			this.robots.disbots[this.robots.disbots.length]=new disbot(posx, posy, this);
 			return true;
 		case "zbot":
 			this.robots.zbots[this.robots.zbots.length]= new zbot(posx, posy);
@@ -493,7 +531,7 @@ Gamestate.prototype.robotMove = function() {
 		this.robots.zbots[i].move();
 	}
 };
-
+/*
 //gamestate function to check for mine/bot proximity detonate bombs break bots
 //currently only testing for minetower proximity...
 Gamestate.prototype.prox = function() {
@@ -509,13 +547,13 @@ Gamestate.prototype.prox = function() {
 		}
 	}
 	//deleting triggered mines
-	/*for(i = 0; i <expMine.length; i++)... delete each bot in expMine[i]*/
+	//for(i = 0; i <expMine.length; i++)... delete each bot in expMine[i]
 	//gain scraps
 	this.p.scrapCnt += 1;
 };
-
+*/
 function robotEngine(difficulty,gs){
-	var random = Math.random(0);
+	var random = Math.random();
 	if(random<=difficulty){
 		var genSide = Math.floor(Math.random()*4);
 		var randPerc = (Math.random()*100+1)+"%";
@@ -537,7 +575,7 @@ function robotEngine(difficulty,gs){
 }
 
 function randomRobot(leftPerc,topPerc,gs){
-	var roboType = Math.floor(Math.random()*1);//changed to only allow single bots temp.
+	var roboType = Math.floor(Math.random()*3);//changed to only allow single bots temp.
 	console.log("create bot " + roboType + "at: "+leftPerc+ ", " +topPerc);
 	switch(roboType){
 		case 0:
