@@ -182,12 +182,8 @@ zbot.prototype.move = function() {
 	this.loc = [x, y];
 	}
 };*/
-
-function zbot (x, y, gs) {
-	this.speed=.2;
-	
-	this.towerName = "zbot" + gs.totalRobots[0]++;
-	this.loc = [x, y];
+function Robot(x,y,gs){
+	this.loc=[x,y];
 	
 	if(y==="0%"){
 		this.startPos=0;
@@ -205,10 +201,8 @@ function zbot (x, y, gs) {
 	this.currentFrameStatus=0;
 	
 	this.bot = document.createElement("DIV");
-	this.bot_pic = gs.visualStore.zbotFront[this.animateFrame].cloneNode(true);
 	
 	this.bot.id = this.towerName;
-	this.bot.style.zIndex=Number(y.slice(0,y.length-1));
 	document.getElementById("game_panel").appendChild(this.bot);
 	this.bot.style.position = "absolute";
 	this.bot.style.height = "4em";
@@ -217,11 +211,11 @@ function zbot (x, y, gs) {
 	this.bot.style.top = y;
 	this.bot.style.transform = "translate(-50%,-50%)"
 	
+	this.bot_pic = gs.visualStore.sbotFront[this.animateFrame].cloneNode(true);
 	this.bot.appendChild(this.bot_pic);
 }
 
-//sbot moves along a straight path
-zbot.prototype.move = function(gs){
+Robot.prototype.move = function(gs){
 	this.frameUpdate(gs);
 	
 	var x = this.loc[0];
@@ -291,6 +285,29 @@ zbot.prototype.move = function(gs){
 	
 	return 0;
 };
+Robot.prototype.quadrantFinder=function(x,y){
+	if(x > 50 && y > 50){
+		return 3;
+	}	
+	else if(x < 50 && y > 50){
+		return 2;
+	}
+	else if(x < 50 && y < 50){
+		return 0;
+	}
+	else if(x > 50 && y < 50){
+		return 1;
+	}
+	return -1;
+}
+
+function zbot (x, y, gs) {
+	this.speed=.2;
+	this.towerName = "zbot" + gs.totalRobots[0]++;
+	Robot.call(this,x,y,gs);
+}
+
+zbot.prototype=Object.create(Robot.prototype);
 
 zbot.prototype.frameUpdate=function(gs){
 	if(this.currentFrameStatus < 4){
@@ -318,133 +335,14 @@ zbot.prototype.frameUpdate=function(gs){
 	}
 }
 
-
-zbot.prototype.quadrantFinder=function(x,y){
-	if(x > 50 && y > 50){
-		return 3;
-	}	
-	else if(x < 50 && y > 50){
-		return 2;
-	}
-	else if(x < 50 && y < 50){
-		return 0;
-	}
-	else if(x > 50 && y < 50){
-		return 1;
-	}
-	return -1;
-}
-
-
 //straight bot: charges straight in
 function sbot (x, y, gs) {
 	this.speed=.2;
-	
 	this.towerName = "sbot" + gs.totalRobots[0]++;
-	this.loc = [x, y];
-	
-	if(y==="0%"){
-		this.startPos=0;
-	}else if(y==="100%"){
-		this.startPos=2;
-	}
-	else if(x==="0%"){
-		this.startPos=3;
-	}
-	else{
-		this.startPos=1;
-	}
-	
-	this.animateFrame=0;
-	this.currentFrameStatus=0;
-	
-	this.bot = document.createElement("DIV");
-	this.bot_pic = gs.visualStore.sbotFront[this.animateFrame].cloneNode(true);
-	
-	this.bot.id = this.towerName;
-	this.bot.style.zIndex=Number(y.slice(0,y.length-1));
-	document.getElementById("game_panel").appendChild(this.bot);
-	this.bot.style.position = "absolute";
-	this.bot.style.height = "4em";
-	this.bot.style.width = "2em";
-	this.bot.style.left = x;
-	this.bot.style.top = y;
-	this.bot.style.transform = "translate(-50%,-50%)"
-	
-	this.bot.appendChild(this.bot_pic);
+	Robot.call(this,x,y,gs);
 }
 
-//sbot moves along a straight path
-sbot.prototype.move = function(gs){
-	this.frameUpdate(gs);
-	
-	var x = this.loc[0];
-	var y = this.loc[1];
-	
-	//console.log("X: " + x + " Y: " + y);
-	var tempX = Number(x.slice(0, x.length - 1));
-	var tempY = Number(y.slice(0, y.length - 1));
-	
-	var quadrant=this.quadrantFinder(tempX,tempY);
-	var moveRatio;
-	
-	var rise = tempY - 50;
-	var run = tempX - 50;
-	
-	if(rise<0) rise *= -1;
-	if(run<0) run *= -1;
-	
-	if( (rise<=1) && (run <= 1 ) ){
-		return 1;
-	}
-	else if(quadrant!=-1){
-		if( (rise/run) < 1 ){
-			moveRatio = rise/run;
-			moveY = (moveRatio / (moveRatio + 1))*this.speed;
-			moveX = this.speed - moveY;
-		}
-		else{
-			moveRatio = run/rise;
-			moveX = (moveRatio / (moveRatio + 1))*this.speed;
-			moveY = this.speed - moveX;
-		}
-		
-		switch(quadrant){
-			case 1:
-				moveX*=-1;
-				moveY*=-1;
-			case 2:
-				moveX*=-1;
-			case 3:
-				moveX*=-1;
-				moveY*=-1;
-		}
-	}
-	else if(rise==0){
-		if(tempX==0){
-			moveX=this.speed;
-		}else{
-			moveX=-this.speed;
-		}
-		moveY=0;
-	}
-	else if(run==0){
-		if(tempY==0)
-			moveY=this.speed;
-		else
-			moveY=-this.speed;
-		moveX = 0;
-	}
-	
-	x = (tempX + moveX) + "%";
-	y = (tempY + moveY) + "%";
-	this.loc = [x, y];
-	
-	document.getElementById(this.towerName).style.left = x;
-	document.getElementById(this.towerName).style.top = y;
-	
-	return 0;
-};
+sbot.prototype=Object.create(Robot.prototype);
 
 sbot.prototype.frameUpdate=function(gs){
 	if(this.currentFrameStatus < 4){
@@ -472,133 +370,14 @@ sbot.prototype.frameUpdate=function(gs){
 	}
 }
 
-
-sbot.prototype.quadrantFinder=function(x,y){
-	if(x > 50 && y > 50){
-		return 3;
-	}	
-	else if(x < 50 && y > 50){
-		return 2;
-	}
-	else if(x < 50 && y < 50){
-		return 0;
-	}
-	else if(x > 50 && y < 50){
-		return 1;
-	}
-	return -1;
-}
-
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
 function disbot (x, y, gs) {
 	this.speed=.1;
-	
 	this.towerName = "disbot" + gs.totalRobots[0]++;
-	this.loc = [x, y];
-	
-	if(y==="0%"){
-		this.startPos=0;
-	}else if(y==="100%"){
-		this.startPos=2;
-	}
-	else if(x==="0%"){
-		this.startPos=3;
-	}
-	else{
-		this.startPos=1;
-	}
-	
-	this.animateFrame=0;
-	this.currentFrameStatus=0;
-	
-	this.bot = document.createElement("DIV");
-	this.bot_pic = gs.visualStore.disbotFront[this.animateFrame].cloneNode(true);
-	
-	this.bot.id = this.towerName;
-	this.bot.style.zIndex=Number(y.slice(0,y.length-1));
-
-	document.getElementById("game_panel").appendChild(this.bot);
-	this.bot.style.position = "absolute";
-	this.bot.style.height = "4em";
-	this.bot.style.width = "2em";
-	this.bot.style.left = x;
-	this.bot.style.top = y;
-	this.bot.style.transform = "translate(-50%,-50%)"
-	
-	this.bot.appendChild(this.bot_pic);
+	Robot.call(this,x,y,gs);
 }
 
-//disbot moves along a straight path 
-disbot.prototype.move = function(gs) {
-	this.frameUpdate(gs);
-	
-	var x = this.loc[0];
-	var y = this.loc[1];
-	
-	//console.log("X: " + x + " Y: " + y);
-	var tempX = Number(x.slice(0, x.length - 1));
-	var tempY = Number(y.slice(0, y.length - 1));
-	
-	var quadrant=this.quadrantFinder(tempX,tempY);
-	var moveRatio;
-	
-	var rise = tempY - 50;
-	var run = tempX - 50;
-	
-	if(rise<0) rise *= -1;
-	if(run<0) run *= -1;
-	
-	if( (rise<=1) && (run <= 1 ) ){
-		return 1;
-	}
-	else if(quadrant!=-1){
-		if( (rise/run) < 1 ){
-			moveRatio = rise/run;
-			moveY = (moveRatio / (moveRatio + 1))*this.speed;
-			moveX = this.speed - moveY;
-		}
-		else{
-			moveRatio = run/rise;
-			moveX = (moveRatio / (moveRatio + 1))*this.speed;
-			moveY = this.speed - moveX;
-		}
-		
-		switch(quadrant){
-			case 1:
-				moveX*=-1;
-				moveY*=-1;
-			case 2:
-				moveX*=-1;
-			case 3:
-				moveX*=-1;
-				moveY*=-1;
-		}
-	}
-	else if(rise==0){
-		if(tempX==0){
-			moveX=this.speed;
-		}else{
-			moveX=-this.speed;
-		}
-		moveY=0;
-	}
-	else if(run==0){
-		if(tempY==0)
-			moveY=this.speed;
-		else
-			moveY=-this.speed;
-		moveX = 0;
-	}
-	
-	x = (tempX + moveX) + "%";
-	y = (tempY + moveY) + "%";
-	this.loc = [x, y];
-	
-	document.getElementById(this.towerName).style.left = x;
-	document.getElementById(this.towerName).style.top = y;
-	
-	return 0;
-};
+disbot.prototype=Object.create(Robot.prototype);
 
 disbot.prototype.frameUpdate=function(gs){
 	if(this.currentFrameStatus < 4){
@@ -624,22 +403,6 @@ disbot.prototype.frameUpdate=function(gs){
 			this.bot_pic=gs.visualStore.disbotSide[this.animateFrame].cloneNode(true);
 		this.bot.replaceChild(this.bot_pic,prev_pic);
 	}
-}
-
-disbot.prototype.quadrantFinder=function(x,y){
-	if(x > 50 && y > 50){
-		return 3;
-	}	
-	else if(x < 50 && y > 50){
-		return 2;
-	}
-	else if(x < 50 && y < 50){
-		return 0;
-	}
-	else if(x > 50 && y < 50){
-		return 1;
-	}
-	return -1;
 }
 
 //Define tower constructors and creator (function kept this mostly the same for compatability with your ui but maybe should split it up a bit...)
@@ -844,7 +607,6 @@ function robotEngine(difficulty,gs){
 
 function randomRobot(leftPerc,topPerc,gs){
 	var roboType = Math.floor(Math.random()*3);//changed to only allow single bots temp.
-	console.log("create bot " + roboType + "at: "+leftPerc+ ", " +topPerc);
 	switch(roboType){
 		case 0:
 			gs.genBots("sbot",leftPerc,topPerc);
