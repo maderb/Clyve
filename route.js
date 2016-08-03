@@ -60,7 +60,31 @@ app.post('/saveFile',function(req,res){
 	res.write(JSON.stringify({'status':1}));
 	res.end();
 });
+app.get('/sbot_front',function(req,res){
+	res.sendFile('public/game/assett/sbot_front/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/sbot_back',function(req,res){
+	res.sendFile('public/game/assett/sbot_back/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/sbot_side',function(req,res){
+	res.sendFile('public/game/assett/sbot_side/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/sbot_flip',function(req,res){
+	res.sendFile('public/game/assett/sbot_flip/'+req.query.num+'.png',{root:__dirname});
+});
 
+app.get('/disbot_front',function(req,res){
+	res.sendFile('public/game/assett/disbot_front/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/disbot_back',function(req,res){
+	res.sendFile('public/game/assett/disbot_back/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/disbot_side',function(req,res){
+	res.sendFile('public/game/assett/disbot_side/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/disbot_flip',function(req,res){
+	res.sendFile('public/game/assett/disbot_flip/'+req.query.num+'.png',{root:__dirname});
+});
 
 //Allows use of static files in public file.
 app.use(express.static(__dirname + '/public'));

@@ -183,26 +183,45 @@ zbot.prototype.move = function() {
 };
 //straight bot: charges straight in
 function sbot (x, y, gs) {
+	this.speed=.2;
 	
 	this.towerName = "sbot" + gs.totalRobots[0]++;
 	this.loc = [x, y];
 	
-	var bot = document.createElement("DIV");
-	bot.id = this.towerName;
-	document.getElementById("game_panel").appendChild(bot);
-	bot.style.position = "absolute";
-	bot.style.height = "2em";
-	bot.style.width = "1em";
-	bot.style.left = x;
-	bot.style.top = y;
-	bot.style.transform = "translate(-50%,-50%)"
+	if(y==="0%"){
+		this.startPos=0;
+	}else if(y==="100%"){
+		this.startPos=2;
+	}
+	else if(x==="0%"){
+		this.startPos=3;
+	}
+	else{
+		this.startPos=1;
+	}
 	
-	//create as color block to show place
-	bot.style.backgroundColor = "pink";
+	this.animateFrame=0;
+	this.currentFrameStatus=0;
+	
+	this.bot = document.createElement("DIV");
+	this.bot_pic = gs.visualStore.sbotFront[this.animateFrame].cloneNode(true);
+	
+	this.bot.id = this.towerName;
+	document.getElementById("game_panel").appendChild(this.bot);
+	this.bot.style.position = "absolute";
+	this.bot.style.height = "4em";
+	this.bot.style.width = "2em";
+	this.bot.style.left = x;
+	this.bot.style.top = y;
+	this.bot.style.transform = "translate(-50%,-50%)"
+	
+	this.bot.appendChild(this.bot_pic);
 }
 
 //sbot moves along a straight path
-sbot.prototype.move = function(){
+sbot.prototype.move = function(gs){
+	this.frameUpdate(gs);
+	
 	var x = this.loc[0];
 	var y = this.loc[1];
 	
@@ -225,13 +244,13 @@ sbot.prototype.move = function(){
 	else if(quadrant!=-1){
 		if( (rise/run) < 1 ){
 			moveRatio = rise/run;
-			moveY = moveRatio / (moveRatio + 1);
-			moveX = 1 - moveY;
+			moveY = (moveRatio / (moveRatio + 1))*this.speed;
+			moveX = this.speed - moveY;
 		}
 		else{
 			moveRatio = run/rise;
-			moveX = moveRatio / (moveRatio + 1);
-			moveY = 1 - moveX;
+			moveX = (moveRatio / (moveRatio + 1))*this.speed;
+			moveY = this.speed - moveX;
 		}
 		
 		switch(quadrant){
@@ -247,17 +266,17 @@ sbot.prototype.move = function(){
 	}
 	else if(rise==0){
 		if(tempX==0){
-			moveX=1;
+			moveX=this.speed;
 		}else{
-			moveX=-1;
+			moveX=-this.speed;
 		}
 		moveY=0;
 	}
 	else if(run==0){
 		if(tempY==0)
-			moveY=1;
+			moveY=this.speed;
 		else
-			moveY=-1;
+			moveY=-this.speed;
 		moveX = 0;
 	}
 	
@@ -267,8 +286,36 @@ sbot.prototype.move = function(){
 	
 	document.getElementById(this.towerName).style.left = x;
 	document.getElementById(this.towerName).style.top = y;
+	
 	return 0;
 };
+
+sbot.prototype.frameUpdate=function(gs){
+	if(this.currentFrameStatus < 4){
+		this.currentFrameStatus++;
+	}
+	else{
+		this.currentFrameStatus=0;
+		if(this.animateFrame < 6){
+			this.animateFrame++;
+		}else{
+			this.animateFrame=0;
+		}
+		
+		var prev_pic = this.bot_pic;
+		if(this.startPos==0)
+			this.bot_pic=gs.visualStore.sbotFront[this.animateFrame].cloneNode(true);
+		else if(this.startPos==1){
+			this.bot_pic=gs.visualStore.sbotFlip[this.animateFrame].cloneNode(true);
+			
+		}else if(this.startPos==2)
+			this.bot_pic=gs.visualStore.sbotBack[this.animateFrame].cloneNode(true);
+		else
+			this.bot_pic=gs.visualStore.sbotSide[this.animateFrame].cloneNode(true);
+		this.bot.replaceChild(this.bot_pic,prev_pic);
+	}
+}
+
 
 sbot.prototype.quadrantFinder=function(x,y){
 	if(x > 50 && y > 50){
@@ -288,26 +335,45 @@ sbot.prototype.quadrantFinder=function(x,y){
 
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
 function disbot (x, y, gs) {
-	this.towerName = "disbot"+gs.totalRobots[1]++;
+	this.speed=.1;
+	
+	this.towerName = "sbot" + gs.totalRobots[0]++;
 	this.loc = [x, y];
 	
-	var bot = document.createElement("DIV");
-	bot.id = this.towerName;
-	document.getElementById("game_panel").appendChild(bot);
-	bot.style.position = "absolute";
-	bot.style.height = "2em";
-	bot.style.width = "1em";
-	bot.style.left = x;
-	bot.style.top = y;
-	bot.style.transform = "translate(-50%,-50%)"
+	if(y==="0%"){
+		this.startPos=0;
+	}else if(y==="100%"){
+		this.startPos=2;
+	}
+	else if(x==="0%"){
+		this.startPos=3;
+	}
+	else{
+		this.startPos=1;
+	}
 	
-	//create as color block to show place
-	bot.style.backgroundColor = "yellow";
+	this.animateFrame=0;
+	this.currentFrameStatus=0;
+	
+	this.bot = document.createElement("DIV");
+	this.bot_pic = gs.visualStore.disbotFront[this.animateFrame].cloneNode(true);
+	
+	this.bot.id = this.towerName;
+	document.getElementById("game_panel").appendChild(this.bot);
+	this.bot.style.position = "absolute";
+	this.bot.style.height = "4em";
+	this.bot.style.width = "2em";
+	this.bot.style.left = x;
+	this.bot.style.top = y;
+	this.bot.style.transform = "translate(-50%,-50%)"
+	
+	this.bot.appendChild(this.bot_pic);
 }
 
 //disbot moves along a straight path 
-disbot.prototype.move = function() {
-	var speed = .5;
+disbot.prototype.move = function(gs) {
+	this.frameUpdate(gs);
+	
 	var x = this.loc[0];
 	var y = this.loc[1];
 	
@@ -330,13 +396,13 @@ disbot.prototype.move = function() {
 	else if(quadrant!=-1){
 		if( (rise/run) < 1 ){
 			moveRatio = rise/run;
-			moveY = (moveRatio / (moveRatio + 1)) * speed;
-			moveX = (1 - moveY) * speed;
+			moveY = (moveRatio / (moveRatio + 1))*this.speed;
+			moveX = this.speed - moveY;
 		}
 		else{
 			moveRatio = run/rise;
-			moveX = (moveRatio / (moveRatio + 1)) * speed;
-			moveY = (1 - moveX) * speed;
+			moveX = (moveRatio / (moveRatio + 1))*this.speed;
+			moveY = this.speed - moveX;
 		}
 		
 		switch(quadrant){
@@ -352,17 +418,17 @@ disbot.prototype.move = function() {
 	}
 	else if(rise==0){
 		if(tempX==0){
-			moveX=speed;
+			moveX=this.speed;
 		}else{
-			moveX=-1*speed;
+			moveX=-this.speed;
 		}
 		moveY=0;
 	}
 	else if(run==0){
 		if(tempY==0)
-			moveY=speed;
+			moveY=this.speed;
 		else
-			moveY=-1*speed;
+			moveY=-this.speed;
 		moveX = 0;
 	}
 	
@@ -372,8 +438,35 @@ disbot.prototype.move = function() {
 	
 	document.getElementById(this.towerName).style.left = x;
 	document.getElementById(this.towerName).style.top = y;
+	
 	return 0;
 };
+
+disbot.prototype.frameUpdate=function(gs){
+	if(this.currentFrameStatus < 4){
+		this.currentFrameStatus++;
+	}
+	else{
+		this.currentFrameStatus=0;
+		if(this.animateFrame < 6){
+			this.animateFrame++;
+		}else{
+			this.animateFrame=0;
+		}
+		
+		var prev_pic = this.bot_pic;
+		if(this.startPos==0)
+			this.bot_pic=gs.visualStore.disbotFront[this.animateFrame].cloneNode(true);
+		else if(this.startPos==1){
+			this.bot_pic=gs.visualStore.disbotFlip[this.animateFrame].cloneNode(true);
+			
+		}else if(this.startPos==2)
+			this.bot_pic=gs.visualStore.disbotBack[this.animateFrame].cloneNode(true);
+		else
+			this.bot_pic=gs.visualStore.disbotSide[this.animateFrame].cloneNode(true);
+		this.bot.replaceChild(this.bot_pic,prev_pic);
+	}
+}
 
 disbot.prototype.quadrantFinder=function(x,y){
 	if(x > 50 && y > 50){
@@ -453,7 +546,7 @@ function flameTower(x, y, gs){
 function Gamestate (type) {
 	this.type = type;
 	this.home = 3; //This is the home's hitpoints.
-	this.difficulty = .01; //higher=more difficult
+	this.difficulty = .06; //higher=more difficult
 	this.p = new Clyve("player");
 	this.totalRobots=[0,0,0];
 	this.robots={
@@ -466,7 +559,8 @@ function Gamestate (type) {
 		mineTowers:[],
 		gunTowers:[],
 		flameTowers:[]
-	}	
+	}
+	this.visualStore=new Visual();
 }
 
 //function to check if game is lost returns 1 if game is over.
@@ -526,13 +620,15 @@ Gamestate.prototype.genTower = function(typeName) {
 //gamestate function to move bots
 Gamestate.prototype.robotMove = function() {
 	for(var i=0;i<this.robots.sbots.length;i++){
-		if(this.robots.sbots[i].move()){
+		if(this.robots.sbots[i].move(this)){
+			document.getElementById("game_panel").removeChild(this.robots.sbots[i].bot);
 			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
 			this.robots.sbots.length--;
 		}
 	}
 	for(var i=0;i<this.robots.disbots.length;i++){
-		if(this.robots.disbots[i].move()){
+		if(this.robots.disbots[i].move(this)){
+			document.getElementById("game_panel").removeChild(this.robots.disbots[i].bot);
 			while((i+1) < this.robots.disbots.length){this.robots.disbots[i]=this.robots.disbots[++i];}
 			this.robots.disbots.length--;
 		}
@@ -540,6 +636,7 @@ Gamestate.prototype.robotMove = function() {
 	for(var i=0;i<this.robots.zbots.length;i++){
 		if(this.robots.zbots[i].move()){
 			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
+			document.getElementById("game_panel").removeChild(this.robots.zbots[i].bot);
 			this.robots.zbots.length--;
 		}
 	}
@@ -600,5 +697,57 @@ function randomRobot(leftPerc,topPerc,gs){
 		case 2:
 			gs.genBots("zbot",leftPerc,topPerc);
 			return;
+	}
+}
+
+function Visual(){
+	this.sbotFront=[];
+	for(var i=0;i<7;i++){
+		this.sbotFront[i]=document.createElement("IMG");
+		this.sbotFront[i].style.height="100%";
+		this.sbotFront[i].src=("/sbot_front?num="+i);
+	}
+	this.sbotBack=[];
+	for(var i=0;i<7;i++){
+		this.sbotBack[i]=document.createElement("IMG");
+		this.sbotBack[i].style.height="100%";
+		this.sbotBack[i].src=("/sbot_back?num="+i);
+	}
+	this.sbotSide=[];
+	for(var i=0;i<8;i++){
+		this.sbotSide[i]=document.createElement("IMG");
+		this.sbotSide[i].style.height="100%";
+		this.sbotSide[i].src=("/sbot_side?num="+i);
+	}
+	this.sbotFlip=[];
+	for(var i=0;i<8;i++){
+		this.sbotFlip[i]=document.createElement("IMG");
+		this.sbotFlip[i].style.height="100%";
+		this.sbotFlip[i].src=("/sbot_flip?num="+i);
+	}
+	
+	this.disbotFront=[];
+	for(var i=0;i<7;i++){
+		this.disbotFront[i]=document.createElement("IMG");
+		this.disbotFront[i].style.height="100%";
+		this.disbotFront[i].src=("/disbot_front?num="+i);
+	}
+	this.disbotBack=[];
+	for(var i=0;i<7;i++){
+		this.disbotBack[i]=document.createElement("IMG");
+		this.disbotBack[i].style.height="100%";
+		this.disbotBack[i].src=("/disbot_back?num="+i);
+	}
+	this.disbotSide=[];
+	for(var i=0;i<8;i++){
+		this.disbotSide[i]=document.createElement("IMG");
+		this.disbotSide[i].style.height="100%";
+		this.disbotSide[i].src=("/disbot_side?num="+i);
+	}
+	this.disbotFlip=[];
+	for(var i=0;i<8;i++){
+		this.disbotFlip[i]=document.createElement("IMG");
+		this.disbotFlip[i].style.height="100%";
+		this.disbotFlip[i].src=("/disbot_flip?num="+i);
 	}
 }
