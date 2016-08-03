@@ -46,7 +46,7 @@ Clyve.prototype.moveU = function(Inc) {
 //Bots
 //*******************************************************************************
 //zig bot: zig zags
-function zbot (x, y) {
+/*function zbot (x, y) {
 	this.name = "zbot";
 	this.loc = [x, y];
 	this.movNum = 0; //incremented to note zigging
@@ -66,6 +66,7 @@ function zbot (x, y) {
 	//create as color block to show place
 	bot.style.backgroundColor = "green";
 }
+
 
 //divides the map into 4 sections and finds the zbot to check for orientation of zigging (leftright vs updown) 
 //might need some tidying... starting with upper and lower bounds then checking left right.. cuts lines in half
@@ -179,8 +180,161 @@ zbot.prototype.move = function() {
 	}
 	this.movNum = (this.movNum % 3) + 1;
 	this.loc = [x, y];
-	}*/
+	}
+};*/
+
+function zbot (x, y, gs) {
+	this.speed=.2;
+	
+	this.towerName = "zbot" + gs.totalRobots[0]++;
+	this.loc = [x, y];
+	
+	if(y==="0%"){
+		this.startPos=0;
+	}else if(y==="100%"){
+		this.startPos=2;
+	}
+	else if(x==="0%"){
+		this.startPos=3;
+	}
+	else{
+		this.startPos=1;
+	}
+	
+	this.animateFrame=0;
+	this.currentFrameStatus=0;
+	
+	this.bot = document.createElement("DIV");
+	this.bot_pic = gs.visualStore.zbotFront[this.animateFrame].cloneNode(true);
+	
+	this.bot.id = this.towerName;
+	document.getElementById("game_panel").appendChild(this.bot);
+	this.bot.style.position = "absolute";
+	this.bot.style.height = "4em";
+	this.bot.style.width = "2em";
+	this.bot.style.left = x;
+	this.bot.style.top = y;
+	this.bot.style.transform = "translate(-50%,-50%)"
+	
+	this.bot.appendChild(this.bot_pic);
+}
+
+//sbot moves along a straight path
+zbot.prototype.move = function(gs){
+	this.frameUpdate(gs);
+	
+	var x = this.loc[0];
+	var y = this.loc[1];
+	
+	//console.log("X: " + x + " Y: " + y);
+	var tempX = Number(x.slice(0, x.length - 1));
+	var tempY = Number(y.slice(0, y.length - 1));
+	
+	var quadrant=this.quadrantFinder(tempX,tempY);
+	var moveRatio;
+	
+	var rise = tempY - 50;
+	var run = tempX - 50;
+	
+	if(rise<0) rise *= -1;
+	if(run<0) run *= -1;
+	
+	if( (rise<=1) && (run <= 1 ) ){
+		return 1;
+	}
+	else if(quadrant!=-1){
+		if( (rise/run) < 1 ){
+			moveRatio = rise/run;
+			moveY = (moveRatio / (moveRatio + 1))*this.speed;
+			moveX = this.speed - moveY;
+		}
+		else{
+			moveRatio = run/rise;
+			moveX = (moveRatio / (moveRatio + 1))*this.speed;
+			moveY = this.speed - moveX;
+		}
+		
+		switch(quadrant){
+			case 1:
+				moveX*=-1;
+				moveY*=-1;
+			case 2:
+				moveX*=-1;
+			case 3:
+				moveX*=-1;
+				moveY*=-1;
+		}
+	}
+	else if(rise==0){
+		if(tempX==0){
+			moveX=this.speed;
+		}else{
+			moveX=-this.speed;
+		}
+		moveY=0;
+	}
+	else if(run==0){
+		if(tempY==0)
+			moveY=this.speed;
+		else
+			moveY=-this.speed;
+		moveX = 0;
+	}
+	
+	x = (tempX + moveX) + "%";
+	y = (tempY + moveY) + "%";
+	this.loc = [x, y];
+	
+	document.getElementById(this.towerName).style.left = x;
+	document.getElementById(this.towerName).style.top = y;
+	
+	return 0;
 };
+
+zbot.prototype.frameUpdate=function(gs){
+	if(this.currentFrameStatus < 4){
+		this.currentFrameStatus++;
+	}
+	else{
+		this.currentFrameStatus=0;
+		if(this.animateFrame < 6){
+			this.animateFrame++;
+		}else{
+			this.animateFrame=0;
+		}
+		
+		var prev_pic = this.bot_pic;
+		if(this.startPos==0)
+			this.bot_pic=gs.visualStore.zbotFront[this.animateFrame].cloneNode(true);
+		else if(this.startPos==1){
+			this.bot_pic=gs.visualStore.zbotFlip[this.animateFrame].cloneNode(true);
+			
+		}else if(this.startPos==2)
+			this.bot_pic=gs.visualStore.zbotBack[this.animateFrame].cloneNode(true);
+		else
+			this.bot_pic=gs.visualStore.zbotSide[this.animateFrame].cloneNode(true);
+		this.bot.replaceChild(this.bot_pic,prev_pic);
+	}
+}
+
+
+zbot.prototype.quadrantFinder=function(x,y){
+	if(x > 50 && y > 50){
+		return 3;
+	}	
+	else if(x < 50 && y > 50){
+		return 2;
+	}
+	else if(x < 50 && y < 50){
+		return 0;
+	}
+	else if(x > 50 && y < 50){
+		return 1;
+	}
+	return -1;
+}
+
+
 //straight bot: charges straight in
 function sbot (x, y, gs) {
 	this.speed=.2;
@@ -337,7 +491,7 @@ sbot.prototype.quadrantFinder=function(x,y){
 function disbot (x, y, gs) {
 	this.speed=.1;
 	
-	this.towerName = "sbot" + gs.totalRobots[0]++;
+	this.towerName = "disbot" + gs.totalRobots[0]++;
 	this.loc = [x, y];
 	
 	if(y==="0%"){
@@ -581,7 +735,7 @@ Gamestate.prototype.genBots = function(robotName, posx, posy) {
 			this.robots.disbots[this.robots.disbots.length]=new disbot(posx, posy, this);
 			return true;
 		case "zbot":
-			this.robots.zbots[this.robots.zbots.length]= new zbot(posx, posy);
+			this.robots.zbots[this.robots.zbots.length]= new zbot(posx, posy, this);
 			return true;
 	}
 	return false;
@@ -634,9 +788,9 @@ Gamestate.prototype.robotMove = function() {
 		}
 	}
 	for(var i=0;i<this.robots.zbots.length;i++){
-		if(this.robots.zbots[i].move()){
-			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
+		if(this.robots.zbots[i].move(this)){
 			document.getElementById("game_panel").removeChild(this.robots.zbots[i].bot);
+			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
 			this.robots.zbots.length--;
 		}
 	}
@@ -749,5 +903,30 @@ function Visual(){
 		this.disbotFlip[i]=document.createElement("IMG");
 		this.disbotFlip[i].style.height="100%";
 		this.disbotFlip[i].src=("/disbot_flip?num="+i);
+	}
+	
+	this.zbotFront=[];
+	for(var i=0;i<7;i++){
+		this.zbotFront[i]=document.createElement("IMG");
+		this.zbotFront[i].style.height="100%";
+		this.zbotFront[i].src=("/zbot_front?num="+i);
+	}
+	this.zbotBack=[];
+	for(var i=0;i<7;i++){
+		this.zbotBack[i]=document.createElement("IMG");
+		this.zbotBack[i].style.height="100%";
+		this.zbotBack[i].src=("/zbot_back?num="+i);
+	}
+	this.zbotSide=[];
+	for(var i=0;i<8;i++){
+		this.zbotSide[i]=document.createElement("IMG");
+		this.zbotSide[i].style.height="100%";
+		this.zbotSide[i].src=("/zbot_side?num="+i);
+	}
+	this.zbotFlip=[];
+	for(var i=0;i<8;i++){
+		this.zbotFlip[i]=document.createElement("IMG");
+		this.zbotFlip[i].style.height="100%";
+		this.zbotFlip[i].src=("/zbot_flip?num="+i);
 	}
 }

@@ -86,6 +86,19 @@ app.get('/disbot_flip',function(req,res){
 	res.sendFile('public/game/assett/disbot_flip/'+req.query.num+'.png',{root:__dirname});
 });
 
+app.get('/zbot_front',function(req,res){
+	res.sendFile('public/game/assett/zbot_front/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/zbot_back',function(req,res){
+	res.sendFile('public/game/assett/zbot_back/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/zbot_side',function(req,res){
+	res.sendFile('public/game/assett/zbot_side/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/zbot_flip',function(req,res){
+	res.sendFile('public/game/assett/zbot_flip/'+req.query.num+'.png',{root:__dirname});
+});
+
 //Allows use of static files in public file.
 app.use(express.static(__dirname + '/public'));
 
