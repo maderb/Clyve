@@ -208,6 +208,7 @@ function zbot (x, y, gs) {
 	this.bot_pic = gs.visualStore.zbotFront[this.animateFrame].cloneNode(true);
 	
 	this.bot.id = this.towerName;
+	this.bot.style.zIndex=Number(y.slice(0,y.length-1));
 	document.getElementById("game_panel").appendChild(this.bot);
 	this.bot.style.position = "absolute";
 	this.bot.style.height = "4em";
@@ -361,6 +362,7 @@ function sbot (x, y, gs) {
 	this.bot_pic = gs.visualStore.sbotFront[this.animateFrame].cloneNode(true);
 	
 	this.bot.id = this.towerName;
+	this.bot.style.zIndex=Number(y.slice(0,y.length-1));
 	document.getElementById("game_panel").appendChild(this.bot);
 	this.bot.style.position = "absolute";
 	this.bot.style.height = "4em";
@@ -513,6 +515,8 @@ function disbot (x, y, gs) {
 	this.bot_pic = gs.visualStore.disbotFront[this.animateFrame].cloneNode(true);
 	
 	this.bot.id = this.towerName;
+	this.bot.style.zIndex=Number(y.slice(0,y.length-1));
+
 	document.getElementById("game_panel").appendChild(this.bot);
 	this.bot.style.position = "absolute";
 	this.bot.style.height = "4em";
