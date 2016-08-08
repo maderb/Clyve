@@ -19,6 +19,17 @@ $.getScript("/objects", function(){
 				gs.robotMove();
 				if(document.getElementById("player"))
 					robotEngine(gs.difficulty,gs);
+				
+				for(i=0;gs.towers.mineTowers[i];i++){
+						gs.towers.mineTowers[i].attackIncoming(gs);
+				}
+				for(i=0;i<gs.towers.gunTowers[i];i++){
+						gs.towers.gunTowers[i].attackIncoming(gs);					
+				}
+				for(i=0;i<gs.towers.flameTowers[i];i++){
+						gs.towers.flameTowers[i].attackIncoming(gs);
+				}
+				
 			},30);	
 
 			//Listens for keys to be pressed and routes to appropriate function on keypress

@@ -46,7 +46,7 @@ Clyve.prototype.playerAnimation=function(gs){
 			this.playerFrame=0;
 		}
 	}
-}
+};
 
 //Next few functions move clyve right, left, up and down.
 Clyve.prototype.moveR = function(Inc) {
@@ -259,7 +259,6 @@ Robot.prototype.move = function(gs){
 	var x = this.loc[0];
 	var y = this.loc[1];
 	
-	//console.log("X: " + x + " Y: " + y);
 	var tempX = Number(x.slice(0, x.length - 1));
 	var tempY = Number(y.slice(0, y.length - 1));
 	
@@ -341,6 +340,7 @@ Robot.prototype.quadrantFinder=function(x,y){
 
 function zbot (x, y, gs) {
 	this.speed=.2;
+	this.health=50;
 	this.towerName = "zbot" + gs.totalRobots[0]++;
 	Robot.call(this,x,y,gs);
 }
@@ -371,11 +371,12 @@ zbot.prototype.frameUpdate=function(gs){
 			this.bot_pic=gs.visualStore.zbotSide[this.animateFrame].cloneNode(true);
 		this.bot.replaceChild(this.bot_pic,prev_pic);
 	}
-}
+};
 
 //straight bot: charges straight in
 function sbot (x, y, gs) {
 	this.speed=.2;
+	this.health=50;
 	this.towerName = "sbot" + gs.totalRobots[0]++;
 	Robot.call(this,x,y,gs);
 }
@@ -399,18 +400,18 @@ sbot.prototype.frameUpdate=function(gs){
 			this.bot_pic=gs.visualStore.sbotFront[this.animateFrame].cloneNode(true);
 		else if(this.startPos==1){
 			this.bot_pic=gs.visualStore.sbotFlip[this.animateFrame].cloneNode(true);
-			
 		}else if(this.startPos==2)
 			this.bot_pic=gs.visualStore.sbotBack[this.animateFrame].cloneNode(true);
 		else
 			this.bot_pic=gs.visualStore.sbotSide[this.animateFrame].cloneNode(true);
 		this.bot.replaceChild(this.bot_pic,prev_pic);
 	}
-}
+};
 
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
 function disbot (x, y, gs) {
 	this.speed=.1;
+	this.health=40;
 	this.towerName = "disbot" + gs.totalRobots[0]++;
 	Robot.call(this,x,y,gs);
 }
@@ -441,7 +442,7 @@ disbot.prototype.frameUpdate=function(gs){
 			this.bot_pic=gs.visualStore.disbotSide[this.animateFrame].cloneNode(true);
 		this.bot.replaceChild(this.bot_pic,prev_pic);
 	}
-}
+};
 
 //Define tower constructors and creator (function kept this mostly the same for compatability with your ui but maybe should split it up a bit...)
 //updated to pass in x,y though not 100% sure that is correct yet... temp.
@@ -449,6 +450,10 @@ function mineTower(x, y, gs){
 	this.towerName="mineTower"+gs.totalTowers[0]++;
 	this.xPos=x;
 	this.yPos=y;
+	this.range=5;
+	
+	this.fireCounter=0;
+	this.fireRate=0;
 	
 	//likely have to sepperate these parts...107-119 as well as the other towers
 	console.log("create " +this.towerName );
@@ -457,15 +462,31 @@ function mineTower(x, y, gs){
 	document.getElementById("game_panel").appendChild(tower);
 	tower.style.position = "absolute";
 	tower.style.height = "2em";
-	tower.style.width = "1em";
+	tower.style.width = "2em";
 	tower.style.left = x+"%";
 	tower.style.top = y+"%";
 	tower.style.transform = "translate(-50%,-50%)"
 	
 	
-	//create as color block to show place
-	tower.style.backgroundColor = "green";
+	var towerDesign = gs.visualStore.mine.cloneNode();
+	tower.appendChild(towerDesign);
 }
+mineTower.prototype.attackIncoming=function(gs){
+	for(var i=0;gs.robots.zbots[i];i++){
+		if(rangeFinder(this.xPos,this.yPos,gs.robots.zbots[i].loc[0],gs.robots.zbots[i].loc[1]) < this.range){
+			gs.robots.zbots[i].health-=100;
+		}
+	}
+	for(var i=0;gs.robots.sbots[i];i++){
+		if(rangeFinder(this.xPos,this.yPos,gs.robots.sbots[i].loc[0],gs.robots.sbots[i].loc[1]) < this.range){
+			gs.robots.sbots[i].health-=100;
+		}
+	}
+	for(var i=0;gs.robots.disbots[i];i++){
+		
+	}
+}
+
 function gunTower(x, y, gs){
 	this.towerName="gunTower"+gs.totalTowers[1]++;
 	this.xPos=x;
@@ -485,6 +506,9 @@ function gunTower(x, y, gs){
 	var towerDesign = gs.visualStore.guntower.cloneNode();
 	tower.appendChild(towerDesign);
 }
+gunTower.prototype.attackIncoming=function(gs){
+	
+}
 function flameTower(x, y, gs){
 	this.towerName="flameTower"+gs.totalTowers[2]++;
 	this.xPos=x;
@@ -495,12 +519,17 @@ function flameTower(x, y, gs){
 	tower.id=this.towerName;
 	document.getElementById("game_panel").appendChild(tower);
 	tower.style.position = "absolute";
-	tower.style.height = "2em";
-	tower.style.width = "1em";
+	tower.style.height = "4em";
+	tower.style.width = "2em";
 	tower.style.left = x+"%";
 	tower.style.top = y+"%";
 	tower.style.transform = "translate(-50%,-50%)"
-	tower.style.backgroundColor = "purple";
+	
+	var towerDesign = gs.visualStore.flametower.cloneNode();
+	tower.appendChild(towerDesign);
+}
+flameTower.prototype.attackIncoming=function(gs){
+	
 }
 
 //the gamestate with all objects combined
@@ -592,6 +621,11 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.sbots[i].bot);
 			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
 			this.robots.sbots.length--;
+			this.home--;
+		}else if(this.robots.sbots[i].health<=0){
+			document.getElementById("game_panel").removeChild(this.robots.sbots[i].bot);
+			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
+			this.robots.sbots.length--;
 		}
 	}
 	for(var i=0;i<this.robots.disbots.length;i++){
@@ -599,10 +633,20 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.disbots[i].bot);
 			while((i+1) < this.robots.disbots.length){this.robots.disbots[i]=this.robots.disbots[++i];}
 			this.robots.disbots.length--;
+			this.home--;
+		}else if(this.robots.disbots[i].health<=0){
+			document.getElementById("game_panel").removeChild(this.robots.disbots[i].bot);
+			while((i+1) < this.robots.disbots.length){this.robots.disbots[i]=this.robots.disbots[++i];}
+			this.robots.disbots.length--;
 		}
 	}
 	for(var i=0;i<this.robots.zbots.length;i++){
 		if(this.robots.zbots[i].move(this)){
+			document.getElementById("game_panel").removeChild(this.robots.zbots[i].bot);
+			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
+			this.robots.zbots.length--;
+			this.home--;
+		}else if(this.robots.zbots[i].health<=0){
 			document.getElementById("game_panel").removeChild(this.robots.zbots[i].bot);
 			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
 			this.robots.zbots.length--;
@@ -761,5 +805,25 @@ function Visual(){
 	this.guntower.style.height="100%";
 	this.guntower.src=("/tower?type=guntower");
 	
+	this.mine=document.createElement("IMG");
+	this.mine.style.height="100%";
+	this.mine.src=("/tower?type=mine");
 	
+	this.flametower=document.createElement("IMG");
+	this.flametower.style.height="100%";
+	this.flametower.src=("/tower?type=flametower");
+}
+
+//takes values as % terminated string
+function rangeFinder(x1,y1,x2,y2){
+		if(x2&&y2){
+			var tempX2 = x2.split("%");
+			var tempY2 = y2.split("%");
+			
+			triX = Math.abs(x1 - tempX2[0]);
+			triY = Math.abs(y1 - tempY2[0]);
+			
+			return (Math.sqrt( Math.pow(triX,2) + Math.pow(triY,2) ) );
+		}
+		else return 100;
 }
