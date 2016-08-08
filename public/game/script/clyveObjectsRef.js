@@ -7,7 +7,45 @@
 function Clyve (type) {
 	this.type = type;
 	this.loc = [50, 60];
+	this.playerFrame=0;
+	this.frameCounter=0;
 	this.scrapCnt = 4; //starting amount of scraps, may change as game gets balanced.
+}
+
+Clyve.prototype.playerAnimation=function(gs){
+	if(document.getElementById("player")){
+		
+		document.getElementById("player").innerHTML="";
+		if(!gs.leftMove && !gs.rightMove && !gs.upMove && !gs.downMove){
+			document.getElementById("player").appendChild(gs.visualStore.clyveRight[0]);
+			this.frameCounter=0;
+			this.playerFrame=0;
+		}else if(gs.leftMove){
+			this.frameCounter++;
+			if(this.frameCounter > 3){
+				this.playerFrame++;
+				this.frameCounter=0;
+			}
+			document.getElementById("player").appendChild(gs.visualStore.clyveLeft[this.playerFrame]);
+		}else if(gs.rightMove){
+			this.frameCounter++;
+			if(this.frameCounter > 3){
+				this.playerFrame++;
+				this.frameCounter=0;
+			}
+			document.getElementById("player").appendChild(gs.visualStore.clyveRight[this.playerFrame]);
+		}else{
+			this.frameCounter++;
+			if(this.frameCounter > 3){
+				this.playerFrame++;
+				this.frameCounter=0;
+			}
+			document.getElementById("player").appendChild(gs.visualStore.clyveRight[this.playerFrame]);			
+		}
+		if(this.playerFrame>6){
+			this.playerFrame=0;
+		}
+	}
 }
 
 //Next few functions move clyve right, left, up and down.
@@ -469,6 +507,12 @@ function Gamestate (type) {
 	this.home = 3; //This is the home's hitpoints.
 	this.difficulty = .06; //higher=more difficult
 	this.p = new Clyve("player");
+	
+	this.leftMove=false;
+	this.rightMove=false;
+	this.upMove=false;
+	this.downMove=false;
+	
 	this.totalRobots=[0,0,0];
 	this.robots={
 		sbots:[],
@@ -694,5 +738,19 @@ function Visual(){
 		this.zbotFlip[i]=document.createElement("IMG");
 		this.zbotFlip[i].style.height="100%";
 		this.zbotFlip[i].src=("/zbot_flip?num="+i);
+	}
+	
+	this.clyveRight=[];
+	for(var i=0;i<8;i++){
+		this.clyveRight[i]=document.createElement("IMG");
+		this.clyveRight[i].style.height="100%";
+		this.clyveRight[i].src=("/clyve_right?num="+i);
+	}
+	
+	this.clyveLeft=[];
+	for(var i=0;i<8;i++){
+		this.clyveLeft[i]=document.createElement("IMG");
+		this.clyveLeft[i].style.height="100%";
+		this.clyveLeft[i].src=("/clyve_left?num="+i);
 	}
 }

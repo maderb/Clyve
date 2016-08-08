@@ -98,6 +98,12 @@ app.get('/zbot_side',function(req,res){
 app.get('/zbot_flip',function(req,res){
 	res.sendFile('public/game/assett/zbot_flip/'+req.query.num+'.png',{root:__dirname});
 });
+app.get('/clyve_right',function(req,res){
+	res.sendFile('public/game/assett/clyve_right/'+req.query.num+'.png',{root:__dirname});
+});
+app.get('/clyve_left',function(req,res){
+	res.sendFile('public/game/assett/clyve_left/'+req.query.num+'.png',{root:__dirname});
+});
 
 //Allows use of static files in public file.
 app.use(express.static(__dirname + '/public'));

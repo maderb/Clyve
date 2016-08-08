@@ -9,15 +9,13 @@ $.getScript("/objects", function(){
 			var moveXIncrement=.6;
 			var moveYIncrement=moveXIncrement*($("#game_panel").width() / $("#game_panel").height());
 			
-			//tracks current status of directional buttons.
-			var leftMove=false,rightMove=false,upMove=false,downMove=false;
-			
 			//create instance of Clyve from clyveObjectsRef.js. type="player"
 			var gs = new Gamestate("gamestate");
 
 			//GAME LOOP: REFRESH RATE 33hz
 			setInterval(function(){
 				playerMove();
+				gs.p.playerAnimation(gs);
 				gs.robotMove();
 				if(document.getElementById("player"))
 					robotEngine(gs.difficulty,gs);
@@ -28,16 +26,16 @@ $.getScript("/objects", function(){
 				var key=e.which||e.keyCode;
 				switch(key){
 					case 37:
-						leftMove=true;
+						gs.leftMove=true;
 						break;
 					case 39:
-						rightMove=true;
+						gs.rightMove=true;
 						break;
 					case 40:
-						downMove=true;
+						gs.downMove=true;
 						break;
 					case 38:
-						upMove=true;
+						gs.upMove=true;
 						break;
 					case 49:
 						if(!gs.genTower("mineTower"))
@@ -61,16 +59,16 @@ $.getScript("/objects", function(){
 				var key=e.which||e.keyCode;
 				switch(key){
 					case 37:
-						leftMove=false;
+						gs.leftMove=false;
 						break;
 					case 39:
-						rightMove=false;
+						gs.rightMove=false;
 						break;
 					case 40:
-						downMove=false;
+						gs.downMove=false;
 						break;
 					case 38:
-						upMove=false;
+						gs.upMove=false;
 						break;
 					case 49:
 						document.getElementById("hot1").style.backgroundColor="white";
@@ -86,16 +84,16 @@ $.getScript("/objects", function(){
 			//Updates player object position
 			function playerMove(){
 				if(document.getElementById("player")){
-					if(leftMove==false && rightMove==true){
+					if(gs.leftMove==false && gs.rightMove==true){
 						gs.p.moveR(moveXIncrement);
 					}
-					if(leftMove==true && rightMove==false){
+					if(gs.leftMove==true && gs.rightMove==false){
 						gs.p.moveL(moveXIncrement);
 					}
-					if(downMove==true && upMove==false){
+					if(gs.downMove==true && gs.upMove==false){
 						gs.p.moveD(moveYIncrement);
 					}
-					if(downMove==false && upMove==true){
+					if(gs.downMove==false && gs.upMove==true){
 						gs.p.moveU(moveYIncrement);
 					}
 					document.getElementById("player").style.left=gs.p.loc[0]+"%";

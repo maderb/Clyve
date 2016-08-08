@@ -12,9 +12,8 @@
 
 #player{
 	position:absolute;
-	width:1.3em;
-	height:2em;
-	background-color:red;
+	width:2.5em;
+	height:5em;
 	transform:translate(-50%,-50%);
 }
 
