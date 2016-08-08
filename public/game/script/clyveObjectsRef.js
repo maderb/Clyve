@@ -462,6 +462,7 @@ function mineTower(x, y, gs){
 	tower.style.top = y+"%";
 	tower.style.transform = "translate(-50%,-50%)"
 	
+	
 	//create as color block to show place
 	tower.style.backgroundColor = "green";
 }
@@ -475,12 +476,14 @@ function gunTower(x, y, gs){
 	tower.id=this.towerName;
 	document.getElementById("game_panel").appendChild(tower);
 	tower.style.position = "absolute";
-	tower.style.height = "2em";
-	tower.style.width = "1em";
+	tower.style.height = "4em";
+	tower.style.width = "2em";
 	tower.style.left = x+"%";
 	tower.style.top = y+"%";
 	tower.style.transform = "translate(-50%,-50%)"
-	tower.style.backgroundColor = "blue";
+	
+	var towerDesign = gs.visualStore.guntower.cloneNode();
+	tower.appendChild(towerDesign);
 }
 function flameTower(x, y, gs){
 	this.towerName="flameTower"+gs.totalTowers[2]++;
@@ -753,4 +756,10 @@ function Visual(){
 		this.clyveLeft[i].style.height="100%";
 		this.clyveLeft[i].src=("/clyve_left?num="+i);
 	}
+	
+	this.guntower=document.createElement("IMG");
+	this.guntower.style.height="100%";
+	this.guntower.src=("/tower?type=guntower");
+	
+	
 }
