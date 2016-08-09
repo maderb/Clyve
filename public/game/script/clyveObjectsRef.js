@@ -486,6 +486,8 @@ function gunTower(x, y, gs){
 	this.towerName="gunTower"+gs.totalTowers[1]++;
 	this.xPos=x;
 	this.yPos=y;
+	this.range=20;
+	this.cooldown=25;
 	
 	console.log("create "+this.towerName);
 	this.tower = document.createElement("DIV");
@@ -502,12 +504,35 @@ function gunTower(x, y, gs){
 	this.tower.appendChild(towerDesign);
 }
 gunTower.prototype.attackIncoming=function(gs){
-	
+	this.cooldown--;
+	if(this.cooldown < 1){
+		this.cooldown=25;
+		for(var i=0;gs.robots.disbots[i];i++){
+			if(rangeFinder(this.xPos,this.yPos,gs.robots.disbots[i].loc[0],gs.robots.disbots[i].loc[1]) < this.range){
+				gs.robots.disbots[i].health-=20;
+				return;
+			}
+		}
+		for(var i=0;gs.robots.zbots[i];i++){
+			if(rangeFinder(this.xPos,this.yPos,gs.robots.zbots[i].loc[0],gs.robots.zbots[i].loc[1]) < this.range){
+				gs.robots.zbots[i].health-=20;
+				return;
+			}
+		}
+		for(var i=0;gs.robots.sbots[i];i++){
+			if(rangeFinder(this.xPos,this.yPos,gs.robots.sbots[i].loc[0],gs.robots.sbots[i].loc[1]) < this.range){
+				gs.robots.sbots[i].health-=20;
+				return;
+			}
+		}
+	}
 }
 function flameTower(x, y, gs){
 	this.towerName="flameTower"+gs.totalTowers[2]++;
 	this.xPos=x;
 	this.yPos=y;
+	this.range=10;
+	this.cooldown=30;
 	
 	console.log("create "+this.towerName);
 	this.tower = document.createElement("DIV");
@@ -524,7 +549,26 @@ function flameTower(x, y, gs){
 	this.tower.appendChild(towerDesign);
 }
 flameTower.prototype.attackIncoming=function(gs){
-	
+	this.cooldown--;
+	if(this.cooldown < 1){
+		this.cooldown=25;
+		console.log("FIRE!");
+		for(var i=0;gs.robots.disbots[i];i++){
+			if(rangeFinder(this.xPos,this.yPos,gs.robots.disbots[i].loc[0],gs.robots.disbots[i].loc[1]) < this.range){
+				gs.robots.disbots[i].health-=15;		
+			}
+		}
+		for(var i=0;gs.robots.zbots[i];i++){
+			if(rangeFinder(this.xPos,this.yPos,gs.robots.zbots[i].loc[0],gs.robots.zbots[i].loc[1]) < this.range){
+				gs.robots.zbots[i].health-=15;
+			}
+		}
+		for(var i=0;gs.robots.sbots[i];i++){
+			if(rangeFinder(this.xPos,this.yPos,gs.robots.sbots[i].loc[0],gs.robots.sbots[i].loc[1]) < this.range){
+				gs.robots.sbots[i].health-=15;
+			}
+		}
+	}
 }
 
 //the gamestate with all objects combined
@@ -603,16 +647,16 @@ Gamestate.prototype.genTower = function(typeName) {
 				}
 				break;
 			case "gunTower":
-				if(this.scrapCnt > 0){//if clyve has the scraps
-					this.towers.gunTowers[this.towers.mineTowers.length] = new gunTower(posx, posy, this);
-					this.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+				if(this.scrapCnt > 1){//if clyve has the scraps
+					this.towers.gunTowers[this.towers.gunTowers.length] = new gunTower(posx, posy, this);
+					this.scrapCnt -= 2; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "flameTower":
-				if(this.scrapCnt > 0){//if clyve has the scraps
-					this.towers.flameTowers[this.towers.mineTowers.length] = new flameTower(posx, posy, this);
-					this.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+				if(this.scrapCnt > 3){//if clyve has the scraps
+					this.towers.flameTowers[this.towers.flameTowers.length] = new flameTower(posx, posy, this);
+					this.scrapCnt -= 4; //arbitrary value, scrap consumption will change
 					return true;
 				}
 		}
@@ -661,27 +705,7 @@ Gamestate.prototype.robotMove = function() {
 		}
 	}
 };
-/*
-//gamestate function to check for mine/bot proximity detonate bombs break bots
-//currently only testing for minetower proximity...
-Gamestate.prototype.prox = function() {
-	var expMine[]
-	var i;
-	for(i=0;i<this.robots.disbots.length;i++){
-		for(var j=0;j<this.towers.mineTowers.length;j++){//adjust for proximity not exact location...
-			if(this.robots.disbots[i].loc[0] == this.towers.mineTowers[j].xPos && this.robots.disbots[i].loc[1] == this.towers.mineTowers[j].yPos){
-				//add mine to the delete array for later in case it hits multiple bots
-				//expMine[expMine.length] = this.towers.mineTowers[j];
-				//this.robots.disbots[i].explode();
-			}
-		}
-	}
-	//deleting triggered mines
-	//for(i = 0; i <expMine.length; i++)... delete each bot in expMine[i]
-	//gain scraps
-	this.p.scrapCnt += 1;
-};
-*/
+
 function robotEngine(difficulty,gs){
 	var random = Math.random();
 	if(random<=difficulty){

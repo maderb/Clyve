@@ -23,10 +23,11 @@ $.getScript("/objects", function(){
 				for(i=0;gs.towers.mineTowers[i];i++){
 						gs.towers.mineTowers[i].attackIncoming(gs,i);
 				}
-				for(i=0;i<gs.towers.gunTowers[i];i++){
+				for(i=0;gs.towers.gunTowers[i];i++){
+						console.log("TEST?");
 						gs.towers.gunTowers[i].attackIncoming(gs);					
 				}
-				for(i=0;i<gs.towers.flameTowers[i];i++){
+				for(i=0;gs.towers.flameTowers[i];i++){
 						gs.towers.flameTowers[i].attackIncoming(gs);
 				}
 				
