@@ -201,7 +201,7 @@ Robot.prototype.quadrantFinder=function(x,y){
 
 function zbot (x, y, gs) {
 	this.speed=.2;
-	this.health=50;
+	this.health=2000*gs.difficulty;
 	
 	this.zigCount=0;
 	
@@ -355,7 +355,7 @@ zbot.prototype.move=function(gs){
 //straight bot: charges straight in
 function sbot (x, y, gs) {
 	this.speed=.2;
-	this.health=50;
+	this.health=2500*gs.difficulty;
 	this.towerName = "sbot" + gs.totalRobots[0]++;
 	Robot.call(this,x,y,gs);
 }
@@ -390,7 +390,7 @@ sbot.prototype.frameUpdate=function(gs){
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
 function disbot (x, y, gs) {
 	this.speed=.1;
-	this.health=40;
+	this.health=2000*gs.difficulty;
 	this.towerName = "disbot" + gs.totalRobots[0]++;
 	Robot.call(this,x,y,gs);
 }
@@ -509,19 +509,19 @@ gunTower.prototype.attackIncoming=function(gs){
 		this.cooldown=25;
 		for(var i=0;gs.robots.disbots[i];i++){
 			if(rangeFinder(this.xPos,this.yPos,gs.robots.disbots[i].loc[0],gs.robots.disbots[i].loc[1]) < this.range){
-				gs.robots.disbots[i].health-=20;
+				gs.robots.disbots[i].health-=10;
 				return;
 			}
 		}
 		for(var i=0;gs.robots.zbots[i];i++){
 			if(rangeFinder(this.xPos,this.yPos,gs.robots.zbots[i].loc[0],gs.robots.zbots[i].loc[1]) < this.range){
-				gs.robots.zbots[i].health-=20;
+				gs.robots.zbots[i].health-=10;
 				return;
 			}
 		}
 		for(var i=0;gs.robots.sbots[i];i++){
 			if(rangeFinder(this.xPos,this.yPos,gs.robots.sbots[i].loc[0],gs.robots.sbots[i].loc[1]) < this.range){
-				gs.robots.sbots[i].health-=20;
+				gs.robots.sbots[i].health-=10;
 				return;
 			}
 		}
@@ -555,17 +555,17 @@ flameTower.prototype.attackIncoming=function(gs){
 		console.log("FIRE!");
 		for(var i=0;gs.robots.disbots[i];i++){
 			if(rangeFinder(this.xPos,this.yPos,gs.robots.disbots[i].loc[0],gs.robots.disbots[i].loc[1]) < this.range){
-				gs.robots.disbots[i].health-=15;		
+				gs.robots.disbots[i].health-=13;		
 			}
 		}
 		for(var i=0;gs.robots.zbots[i];i++){
 			if(rangeFinder(this.xPos,this.yPos,gs.robots.zbots[i].loc[0],gs.robots.zbots[i].loc[1]) < this.range){
-				gs.robots.zbots[i].health-=15;
+				gs.robots.zbots[i].health-=13;
 			}
 		}
 		for(var i=0;gs.robots.sbots[i];i++){
 			if(rangeFinder(this.xPos,this.yPos,gs.robots.sbots[i].loc[0],gs.robots.sbots[i].loc[1]) < this.range){
-				gs.robots.sbots[i].health-=15;
+				gs.robots.sbots[i].health-=13;
 			}
 		}
 	}
@@ -576,10 +576,11 @@ flameTower.prototype.attackIncoming=function(gs){
 function Gamestate (type) {
 	this.type = type;
 	this.home = 3; //This is the home's hitpoints.
-	this.difficulty = .06; //higher=more difficult
+	this.difficulty = .02; //higher=more difficult
 	this.p = new Clyve("player");
 	
-	this.scrapCnt=4;
+	this.scrapCnt=15;
+	this.score=0;
 	
 	this.leftMove=false;
 	this.rightMove=false;
@@ -647,16 +648,16 @@ Gamestate.prototype.genTower = function(typeName) {
 				}
 				break;
 			case "gunTower":
-				if(this.scrapCnt > 1){//if clyve has the scraps
+				if(this.scrapCnt > 9){//if clyve has the scraps
 					this.towers.gunTowers[this.towers.gunTowers.length] = new gunTower(posx, posy, this);
-					this.scrapCnt -= 2; //arbitrary value, scrap consumption will change
+					this.scrapCnt -= 10; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "flameTower":
-				if(this.scrapCnt > 3){//if clyve has the scraps
+				if(this.scrapCnt > 6){//if clyve has the scraps
 					this.towers.flameTowers[this.towers.flameTowers.length] = new flameTower(posx, posy, this);
-					this.scrapCnt -= 4; //arbitrary value, scrap consumption will change
+					this.scrapCnt -= 7; //arbitrary value, scrap consumption will change
 					return true;
 				}
 		}
@@ -675,6 +676,7 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.sbots[i].bot);
 			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
 			this.robots.sbots.length--;
+			this.score++;
 			this.scrapCnt++;
 		}
 	}
@@ -688,6 +690,7 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.disbots[i].bot);
 			while((i+1) < this.robots.disbots.length){this.robots.disbots[i]=this.robots.disbots[++i];}
 			this.robots.disbots.length--;
+			this.score++;
 			this.scrapCnt++;
 		}
 	}
@@ -701,6 +704,7 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.zbots[i].bot);
 			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
 			this.robots.zbots.length--;
+			this.score++;
 			this.scrapCnt++;
 		}
 	}
@@ -851,6 +855,7 @@ function Visual(){
 	this.flametower=document.createElement("IMG");
 	this.flametower.style.height="100%";
 	this.flametower.src=("/tower?type=flametower");
+	
 }
 
 //takes values as % terminated string

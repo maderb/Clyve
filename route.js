@@ -110,6 +110,9 @@ app.get('/tower',function(req,res){
 app.get('/mineExplosion',function(req,res){
 	res.sendFile('public/game/assett/mine_explosion/'+req.query.num+'.png',{root:__dirname});
 });
+app.get('/background',function(req,res){
+	res.sendFile('public/game/assett/background.png',{root:__dirname});
+});
 //Allows use of static files in public file.
 app.use(express.static(__dirname + '/public'));
 

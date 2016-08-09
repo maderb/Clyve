@@ -14,6 +14,12 @@ $.getScript("/objects", function(){
 
 			//GAME LOOP: REFRESH RATE 33hz
 			setInterval(function(){
+				if(gs.score % 15==0){
+					gs.score++;
+					gs.difficulty+=.005;
+					console.log(gs.difficulty);
+				}
+				
 				playerMove();
 				gs.p.playerAnimation(gs);
 				gs.robotMove();
@@ -24,7 +30,6 @@ $.getScript("/objects", function(){
 						gs.towers.mineTowers[i].attackIncoming(gs,i);
 				}
 				for(i=0;gs.towers.gunTowers[i];i++){
-						console.log("TEST?");
 						gs.towers.gunTowers[i].attackIncoming(gs);					
 				}
 				for(i=0;gs.towers.flameTowers[i];i++){
