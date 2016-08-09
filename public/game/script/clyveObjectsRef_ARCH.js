@@ -2,13 +2,10 @@
 //Description: Class objects for clyve
 //Date: 7-6-16
 
-//Clyve character object, default position center of first row
-//****************************************************************************
 function Clyve (type) {
 	this.type = type;
 	this.loc = [50, 60];
-	this.playerFrame=0;
-	this.frameCounter=0;
+	this.scrapCnt = 4; //starting amount of scraps, may change as game gets balanced.
 }
 
 Clyve.prototype.playerAnimation=function(gs){
@@ -47,7 +44,6 @@ Clyve.prototype.playerAnimation=function(gs){
 	}
 };
 
-//Next few functions move clyve right, left, up and down.
 Clyve.prototype.moveR = function(Inc) {
 	var x = this.loc[0];
 	var y = this.loc[1];	
@@ -83,7 +79,6 @@ Clyve.prototype.moveU = function(Inc) {
 function Robot(x,y,gs){
 	this.loc=[x,y];
 	
-	this.startPos;
 	if(y==="0%"){
 		this.startPos=0;
 	}else if(y==="100%"){
@@ -120,6 +115,7 @@ Robot.prototype.move = function(gs){
 	var x = this.loc[0];
 	var y = this.loc[1];
 	
+	//console.log("X: " + x + " Y: " + y);
 	var tempX = Number(x.slice(0, x.length - 1));
 	var tempY = Number(y.slice(0, y.length - 1));
 	
@@ -201,16 +197,191 @@ Robot.prototype.quadrantFinder=function(x,y){
 
 function zbot (x, y, gs) {
 	this.speed=.2;
-	this.health=50;
-	
-	this.zigCount=0;
-	
 	this.towerName = "zbot" + gs.totalRobots[0]++;
-	
+	this.zigCnt=16;
+	this.section=0;
 	Robot.call(this,x,y,gs);
 }
 
 zbot.prototype=Object.create(Robot.prototype);
+
+zbot.prototype.findSec = function() {
+	var x = this.loc[0];
+	var y = this.loc[1];
+	var tempX = Number(x.slice(0, x.length - 1));
+	var tempY = Number(y.slice(0, y.length - 1));	
+	if(tempX > 50){//right half
+		if(tempY<tempX){//upper bound right quarter
+			if(tempY>(100-tempX))//lower bound right quarter
+				this.section = 1;
+			else
+				this.section = 0;
+		}
+		else
+			this.section = 0;
+	}
+	else{
+		if(tempY<(100-tempX)){//upper bound
+			if(tempY>tempX)//lower bound
+				this.section = 1;
+			else
+				this.section = 0;
+		}
+		else 
+			this.section = 0;
+	}
+};
+
+zbot.prototype.move = function(gs){
+	this.frameUpdate(gs);
+	
+	var x = this.loc[0];
+	var y = this.loc[1];
+	
+	//console.log("X: " + x + " Y: " + y);
+	var tempX = Number(x.slice(0, x.length - 1));
+	var tempY = Number(y.slice(0, y.length - 1));
+	
+	var quadrant=this.quadrantFinder(tempX,tempY);
+	//var pie=this.pieFinder(tempX,tempY);
+	var moveRatio;
+	var moveX=0;
+	var moveY=0;
+	
+	var rise = tempY - 50;
+	var run = tempX - 50;
+	
+	if(this.zigCnt==16){
+		this.findSec();
+		//console.log("setup pie: " + this.section + "\n");
+		this.zigCnt=0;
+	}
+	else if(this.zigCnt<2){//normal move
+		//console.log("01\n");
+		if(rise<0) rise *= -1;
+		if(run<0) run *= -1;
+		
+		if( (rise<=1) && (run <= 1 ) ){
+			return 1;
+		}
+		else if(quadrant!=-1){
+			if( (rise/run) < 1 ){
+				moveRatio = rise/run;
+				moveY = (moveRatio / (moveRatio + 1))*this.speed;
+				moveX = this.speed - moveY;
+			}
+			else{
+				moveRatio = run/rise;
+				moveX = (moveRatio / (moveRatio + 1))*this.speed;
+				moveY = this.speed - moveX;
+			}
+			
+			switch(quadrant){
+				case 1:
+					moveX*=-1;
+					moveY*=-1;
+				case 2:
+					moveX*=-1;
+				case 3:
+					moveX*=-1;
+					moveY*=-1;
+			}
+		}
+		else if(rise==0){
+			if(tempX==0){
+				moveX=this.speed;
+			}else{
+				moveX=-this.speed;
+			}
+			moveY=0;
+		}
+		else if(run==0){
+			if(tempY==0)
+				moveY=this.speed;
+			else
+				moveY=-this.speed;
+			moveX = 0;
+		}
+	}
+	else if(this.zigCnt>1 && this.zigCnt<5){//move one directional based off of pie slice
+		//console.log("23\n");
+		if(this.section==0){
+			moveX = .5;
+		}
+		else if(this.section==1){
+			moveY = .5;
+		}
+		else{return 1;}
+	}
+	else if(this.zigCnt>4 && this.zigCnt<8){//normal move
+		//console.log("45\n");
+		
+		if(rise<0) rise *= -1;
+		if(run<0) run *= -1;
+		
+		if( (rise<=1) && (run <= 1 ) ){
+			return 1;
+		}
+		else if(quadrant!=-1){
+			if( (rise/run) < 1 ){
+				moveRatio = rise/run;
+				moveY = (moveRatio / (moveRatio + 1))*this.speed;
+				moveX = this.speed - moveY;
+			}
+			else{
+				moveRatio = run/rise;
+				moveX = (moveRatio / (moveRatio + 1))*this.speed;
+				moveY = this.speed - moveX;
+			}
+			
+			switch(quadrant){
+				case 1:
+					moveX*=-1;
+					moveY*=-1;
+				case 2:
+					moveX*=-1;
+				case 3:
+					moveX*=-1;
+					moveY*=-1;
+			}
+		}
+		else if(rise==0){
+			if(tempX==0){
+				moveX=this.speed;
+			}else{
+				moveX=-this.speed;
+			}
+			moveY=0;
+		}
+		else if(run==0){
+			if(tempY==0)
+				moveY=this.speed;
+			else
+				moveY=-this.speed;
+			moveX = 0;
+		}
+	}
+	else if(this.zigCnt>7 && this.zigCnt<11){//move other directional
+		//console.log("67\n");
+		if(this.section==0){
+			moveX = -.5;
+		}
+		else if(this.section==1){
+			moveY = -.5;
+		}
+		else{return 1;}
+	}		
+	this.zigCnt++;
+	if(this.zigCnt>11){this.zigCnt=0;}
+	
+	x = (tempX + moveX) + "%";
+	y = (tempY + moveY) + "%";
+	this.loc = [x, y];
+	
+	document.getElementById(this.towerName).style.left = x;
+	document.getElementById(this.towerName).style.top = y;
+	return 0;
+};
 
 zbot.prototype.frameUpdate=function(gs){
 	if(this.currentFrameStatus < 4){
@@ -236,126 +407,11 @@ zbot.prototype.frameUpdate=function(gs){
 			this.bot_pic=gs.visualStore.zbotSide[this.animateFrame].cloneNode(true);
 		this.bot.replaceChild(this.bot_pic,prev_pic);
 	}
-};
-
-zbot.prototype.move=function(gs){
-	this.frameUpdate(gs);
-	
-	var x = this.loc[0];
-	var y = this.loc[1];
-	
-	var tempX = Number(x.slice(0, x.length - 1));
-	var tempY = Number(y.slice(0, y.length - 1));
-	
-	var quadrant=this.quadrantFinder(tempX,tempY);
-	var moveRatio;
-	
-	var rise = tempY - 50;
-	var run = tempX - 50;
-	var tangX;
-	var tangY;
-	var tangRatio;
-	
-	if(rise<0) rise *= -1;
-	if(run<0) run *= -1;
-	
-	if( (rise<=1) && (run <= 1 ) ){
-		return 1;
-	}
-	else if(quadrant!=-1){
-		if( (rise/run) < 1 ){
-			moveRatio = rise/run;
-			moveY = (moveRatio / (moveRatio + 1))*this.speed;
-			moveX = this.speed - moveY;
-			tangRatio = (run/rise);
-			tangX = (tangRatio / (tangRatio+1)) * this.speed;
-			tangY = this.speed - tangX;
-		}
-		else{
-			moveRatio = run/rise;
-			moveX = (moveRatio / (moveRatio + 1))*this.speed;
-			moveY = this.speed - moveX;
-			tangRatio = (rise/run)*this.speed;
-			tangY = (tangRatio / (tangRatio+1)) * this.speed;
-			tangX = this.speed - tangY;
-		}
-	}
-	else if(rise==0){
-		if(tempX==0){
-			moveX=this.speed;
-		}else{
-			moveX=-this.speed;
-		}
-		moveY=0;
-	}
-	else if(run==0){
-		if(tempY==0)
-			moveY=this.speed;
-		else
-			moveY=-this.speed;
-		moveX = 0;
-	}
-	
-	switch(quadrant){
-		case 1:
-			moveX*=-1;
-			break;
-		case 2:
-			moveY*=-1;
-			break;
-		case 3:
-			moveX*=-1;
-			moveY*=-1;
-			break;
-	}
-	
-	if(this.zigCount < 200){
-		if((this.zigCount<50)||(this.zigCount>=150)){
-			switch(this.startPos){
-				case 0:
-					moveX+=this.speed;
-					break;
-				case 1:
-					moveY+=this.speed;
-					break;
-				case 2:
-					moveX-=this.speed;
-					break;
-				case 3:
-					moveY-=this.speed;
-			}
-		}else{
-			switch(this.startPos){
-				case 0:
-					moveX-=this.speed;
-					break;
-				case 1:
-					moveY-=this.speed;
-					break;
-				case 2:
-					moveX+=this.speed;
-					break;
-				case 3:
-					moveY+=this.speed;
-			}
-		}
-		this.zigCount++;
-	}else{this.zigCount=0;}
-	
-	x = (tempX + moveX) + "%";
-	y = (tempY + moveY) + "%";
-	this.loc = [x, y];
-	
-	document.getElementById(this.towerName).style.left = x;
-	document.getElementById(this.towerName).style.top = y;
-	
-	return 0;
 }
 
 //straight bot: charges straight in
 function sbot (x, y, gs) {
 	this.speed=.2;
-	this.health=50;
 	this.towerName = "sbot" + gs.totalRobots[0]++;
 	Robot.call(this,x,y,gs);
 }
@@ -379,18 +435,19 @@ sbot.prototype.frameUpdate=function(gs){
 			this.bot_pic=gs.visualStore.sbotFront[this.animateFrame].cloneNode(true);
 		else if(this.startPos==1){
 			this.bot_pic=gs.visualStore.sbotFlip[this.animateFrame].cloneNode(true);
+			
 		}else if(this.startPos==2)
 			this.bot_pic=gs.visualStore.sbotBack[this.animateFrame].cloneNode(true);
 		else
 			this.bot_pic=gs.visualStore.sbotSide[this.animateFrame].cloneNode(true);
 		this.bot.replaceChild(this.bot_pic,prev_pic);
 	}
-};
+}
 
 //disarm bot: charges in straight and disarms the first tower it comes into contact with (dies?)
 function disbot (x, y, gs) {
 	this.speed=.1;
-	this.health=40;
+	this.armor=1;
 	this.towerName = "disbot" + gs.totalRobots[0]++;
 	Robot.call(this,x,y,gs);
 }
@@ -421,7 +478,7 @@ disbot.prototype.frameUpdate=function(gs){
 			this.bot_pic=gs.visualStore.disbotSide[this.animateFrame].cloneNode(true);
 		this.bot.replaceChild(this.bot_pic,prev_pic);
 	}
-};
+}
 
 //Define tower constructors and creator (function kept this mostly the same for compatability with your ui but maybe should split it up a bit...)
 //updated to pass in x,y though not 100% sure that is correct yet... temp.
@@ -429,80 +486,38 @@ function mineTower(x, y, gs){
 	this.towerName="mineTower"+gs.totalTowers[0]++;
 	this.xPos=x;
 	this.yPos=y;
-	this.range=5;
-	
-	this.fireCounter=0;
-	this.fireRate=0;
-	this.explode=0;
 	
 	//likely have to sepperate these parts...107-119 as well as the other towers
 	console.log("create " +this.towerName );
-	this.tower = document.createElement("DIV");
-	this.tower.id = this.towerName;
-	document.getElementById("game_panel").appendChild(this.tower);
-	this.tower.style.position = "absolute";
-	this.tower.style.height = "2em";
-	this.tower.style.width = "2em";
-	this.tower.style.left = x+"%";
-	this.tower.style.top = y+"%";
-	this.tower.style.transform = "translate(-50%,-50%)"
+	var tower = document.createElement("DIV");
+	tower.id = this.towerName;
+	document.getElementById("game_panel").appendChild(tower);
+	tower.style.position = "absolute";
+	tower.style.height = "2em";
+	tower.style.width = "1em";
+	tower.style.left = x+"%";
+	tower.style.top = y+"%";
+	tower.style.transform = "translate(-50%,-50%)"
 	
-	this.towerDesign = gs.visualStore.mine.cloneNode();
-	this.tower.appendChild(this.towerDesign);
+	//create as color block to show place
+	tower.style.backgroundColor = "green";
 }
-mineTower.prototype.attackIncoming=function(gs,j){
-	for(var i=0;gs.robots.zbots[i];i++){
-		if(rangeFinder(this.xPos,this.yPos,gs.robots.zbots[i].loc[0],gs.robots.zbots[i].loc[1]) < this.range){
-			gs.robots.zbots[i].health-=100;
-			this.explode=1;
-		}
-	}
-	for(var i=0;gs.robots.sbots[i];i++){
-		if(rangeFinder(this.xPos,this.yPos,gs.robots.sbots[i].loc[0],gs.robots.sbots[i].loc[1]) < this.range){
-			gs.robots.sbots[i].health-=100;
-			this.explode=1;
-		}
-	}
-	for(var i=0;gs.robots.disbots[i];i++){
-		if(rangeFinder(this.xPos,this.yPos,gs.robots.disbots[i].loc[0],gs.robots.disbots[i].loc[1]) < this.range){
-			gs.removeMineTower(gs.towers.mineTowers,j);		
-		}
-	}
-	
-	if(this.explode>=1){
-		if((this.explode%4)==0){
-			var tempDesign = gs.visualStore.mineExplosion[this.explode%3].cloneNode();
-			this.tower.replaceChild(tempDesign,this.towerDesign);
-			this.towerDesign = tempDesign;
-			if(this.explode>=24){
-				gs.removeMineTower(gs.towers.mineTowers,j);
-			}
-		}
-		this.explode++;
-	}
-}
-
 function gunTower(x, y, gs){
 	this.towerName="gunTower"+gs.totalTowers[1]++;
 	this.xPos=x;
 	this.yPos=y;
 	
 	console.log("create "+this.towerName);
-	this.tower = document.createElement("DIV");
-	this.tower.id=this.towerName;
-	document.getElementById("game_panel").appendChild(this.tower);
-	this.tower.style.position = "absolute";
-	this.tower.style.height = "4em";
-	this.tower.style.width = "2em";
-	this.tower.style.left = x+"%";
-	this.tower.style.top = y+"%";
-	this.tower.style.transform = "translate(-50%,-50%)"
-	
-	var towerDesign = gs.visualStore.guntower.cloneNode();
-	this.tower.appendChild(towerDesign);
-}
-gunTower.prototype.attackIncoming=function(gs){
-	
+	var tower = document.createElement("DIV");
+	tower.id=this.towerName;
+	document.getElementById("game_panel").appendChild(tower);
+	tower.style.position = "absolute";
+	tower.style.height = "2em";
+	tower.style.width = "1em";
+	tower.style.left = x+"%";
+	tower.style.top = y+"%";
+	tower.style.transform = "translate(-50%,-50%)"
+	tower.style.backgroundColor = "blue";
 }
 function flameTower(x, y, gs){
 	this.towerName="flameTower"+gs.totalTowers[2]++;
@@ -510,38 +525,27 @@ function flameTower(x, y, gs){
 	this.yPos=y;
 	
 	console.log("create "+this.towerName);
-	this.tower = document.createElement("DIV");
-	this.tower.id=this.towerName;
-	document.getElementById("game_panel").appendChild(this.tower);
-	this.tower.style.position = "absolute";
-	this.tower.style.height = "4em";
-	this.tower.style.width = "2em";
-	this.tower.style.left = x+"%";
-	this.tower.style.top = y+"%";
-	this.tower.style.transform = "translate(-50%,-50%)"
-	
-	var towerDesign = gs.visualStore.flametower.cloneNode();
-	this.tower.appendChild(towerDesign);
-}
-flameTower.prototype.attackIncoming=function(gs){
-	
+	var tower = document.createElement("DIV");
+	tower.id=this.towerName;
+	document.getElementById("game_panel").appendChild(tower);
+	tower.style.position = "absolute";
+	tower.style.height = "2em";
+	tower.style.width = "1em";
+	tower.style.left = x+"%";
+	tower.style.top = y+"%";
+	tower.style.transform = "translate(-50%,-50%)"
+	tower.style.backgroundColor = "purple";
 }
 
 //the gamestate with all objects combined
 //uses: gamestate.p.moveR() to move right etc...
 function Gamestate (type) {
+	this.user;
+	this.pw;
 	this.type = type;
 	this.home = 3; //This is the home's hitpoints.
-	this.difficulty = .06; //higher=more difficult
+	this.difficulty = .01; //higher=more difficult
 	this.p = new Clyve("player");
-	
-	this.scrapCnt=4;
-	
-	this.leftMove=false;
-	this.rightMove=false;
-	this.upMove=false;
-	this.downMove=false;
-	
 	this.totalRobots=[0,0,0];
 	this.robots={
 		sbots:[],
@@ -555,14 +559,6 @@ function Gamestate (type) {
 		flameTowers:[]
 	}
 	this.visualStore=new Visual();
-}
-
-Gamestate.prototype.removeMineTower=function(towers,i){
-	console.log("REMOVE MINETOWER"+i);
-	document.getElementById("game_panel").removeChild(towers[i].tower);
-	while((i+1)<towers.length){towers[i]=towers[i+1];i++;}
-	towers.length--;
-	this.totalTowers[0]--;
 }
 
 //function to check if game is lost returns 1 if game is over.
@@ -596,27 +592,174 @@ Gamestate.prototype.genTower = function(typeName) {
 		var posy = this.p.loc[1];		
 		switch(typeName){
 			case "mineTower":
-				if(this.scrapCnt > 0){//if clyve has the scraps
+				if(this.p.scrapCnt > 0){//if clyve has the scraps
 					this.towers.mineTowers[this.towers.mineTowers.length] = new mineTower(posx, posy, this);
-					this.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "gunTower":
-				if(this.scrapCnt > 0){//if clyve has the scraps
+				if(this.p.scrapCnt > 0){//if clyve has the scraps
 					this.towers.gunTowers[this.towers.mineTowers.length] = new gunTower(posx, posy, this);
-					this.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "flameTower":
-				if(this.scrapCnt > 0){//if clyve has the scraps
+				if(this.p.scrapCnt > 0){//if clyve has the scraps
 					this.towers.flameTowers[this.towers.mineTowers.length] = new flameTower(posx, posy, this);
-					this.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+					this.p.scrapCnt -= 1; //arbitrary value, scrap consumption will change
 					return true;
 				}
 		}
 		return false;
+};
+
+Gamestate.prototype.deleteBot = function(i, bot) {
+	if(bot==0){
+		//console.log("killed a sbot\n");
+		//destroy the image too
+		if(this.robots.sbots.splice(i,1)){return 0;}
+
+	}
+	else if(bot==1){	
+		//console.log("killed a zbot\n");
+		//destroy the image too	
+		if(this.robots.zbots.splice(i,1)){return 0;}
+	
+	}	
+	else if(bot==2){
+		//console.log("killed a disbot\n");
+		//destroy the image too
+		if(this.robots.disbots.splice(i,1)){return 0;}
+	}
+	else{
+		return 1; 
+	}
+}
+
+Gamestate.prototype.deleteMine = function(i) {
+	console.log("killed a mine\n");
+	//destroy image here...
+	if(this.towers.mineTowers.splice(i,1)){return 0;}	
+	/*saved for if we implement more mines...
+	if(bot==0){
+		//console.log("killed a sbot\n");
+		//destroy the image too
+		if(this.robots.sbots.splice(i,1)){return 0;}
+
+	}
+	else if(bot==1){	
+		//console.log("killed a zbot\n");
+		//destroy the image too	
+		if(this.robots.zbots.splice(i,1)){return 0;}
+	
+	}	
+	else if(bot==2){
+		//console.log("killed a disbot\n");
+		//destroy the image too
+		if(this.robots.disbots.splice(i,1)){return 0;}
+	}*/
+	else{
+		return 1; 
+	}
+}
+
+//gamestate function to check for mine/bot proximity detonate bombs break bots
+//currently only testing for minetower proximity...
+Gamestate.prototype.prox = function() {
+	var i;
+	var j;
+	var x;
+	var y;	
+	var z;
+	var tempX;
+	var tempY;
+	var mineX;
+	var mineY;
+	//var explode = [];//queue of ints for mines to explode
+	for(i=0;i<this.robots.sbots.length;i++){//killin sbots
+		x = this.robots.sbots[i].loc[0];
+		y = this.robots.sbots[i].loc[1];
+		tempX = Number(x.slice(0, x.length - 1));
+		tempY = Number(y.slice(0, y.length - 1));
+		//console.log("X: " + tempX + " Y: " + tempY + "\n");		
+		if(tempX < 52 && tempX > 48 && tempY < 52 && tempY > 48){
+			console.log("sbot reached home\n");//reached home
+			this.deleteBot(i, 0);
+			this.home = this.home - 1;
+		}
+		for(j=0;j<this.towers.mineTowers.length;j++){
+			mineX = this.towers.mineTowers[j].xPos;
+			mineY = this.towers.mineTowers[j].yPos
+			//console.log("x: " + mineX + " y: " + mineY);
+			//console.log("tempx: " + tempX + " tempy: " + tempY);
+			if(tempX < (mineX+5) && tempX > (mineX-5) && tempY < (mineY+5) && tempY > (mineY-5)){
+				if(!(this.deleteBot(i, 0))){this.p.scrapCnt = (this.p.scrapCnt + 1);}
+				console.log("dedsbot by mine. Scrapcount: " + this.p.scrapCnt);//reached mine
+				this.deleteMine(j);
+				//var explode[this.towers.mineTowers.length]=j//add mine to boom queue in case it double kills
+			}
+		}
+		//for(z=0;z<this.towers.mineTowers.length;z++){
+			//tSPLICE this.towers.mineTowers[.explode[z]];
+		//}
+	}		
+	for(i=0;i<this.robots.zbots.length;i++){//killin zbots
+		x = this.robots.zbots[i].loc[0];
+		y = this.robots.zbots[i].loc[1];
+		var tempX = Number(x.slice(0, x.length - 1));
+		var tempY = Number(y.slice(0, y.length - 1));
+		//console.log("X: " + tempX + " Y: " + tempY + "\n");		
+		if(tempX < 52 && tempX > 48 && tempY < 52 && tempY > 48){
+			console.log("zbot reached home\n");//reached home
+			this.deleteBot(i, 1);
+			this.home = this.home - 1;
+		}
+		for(j=0;j<this.towers.mineTowers.length;j++){
+			mineX = this.towers.mineTowers[j].xPos;
+			mineY = this.towers.mineTowers[j].yPos
+			//console.log("x: " + mineX + " y: " + mineY);
+			//console.log("tempx: " + tempX + " tempy: " + tempY);
+			if(tempX < (mineX+5) && tempX > (mineX-5) && tempY < (mineY+5) && tempY > (mineY-5)){
+				if(!(this.deleteBot(i, 1))){this.p.scrapCnt = (this.p.scrapCnt + 1);}
+				console.log("dedsbot by mine. Scrapcount: " + this.p.scrapCnt);//reached mine
+				this.deleteMine(j);
+				//var explode[this.towers.mineTowers.length]=j//add mine to boom queue in case it double kills
+			}
+		}
+	}
+	for(i=0;i<this.robots.disbots.length;i++){
+		x = this.robots.disbots[i].loc[0];
+		y = this.robots.disbots[i].loc[1];
+		var tempX = Number(x.slice(0, x.length - 1));
+		var tempY = Number(y.slice(0, y.length - 1));
+		//console.log("X: " + tempX + " Y: " + tempY + "\n");		
+		if(tempX < 52 && tempX > 48 && tempY < 52 && tempY > 48){
+			console.log("disbot reached home\n");//reached home
+			this.deleteBot(i, 2);
+			this.home = this.home - 1;
+		}
+		for(j=0;j<this.towers.mineTowers.length;j++){
+			mineX = this.towers.mineTowers[j].xPos;
+			mineY = this.towers.mineTowers[j].yPos
+			//console.log("x: " + mineX + " y: " + mineY);
+			//console.log("tempx: " + tempX + " tempy: " + tempY);
+			if(tempX < (mineX+5) && tempX > (mineX-5) && tempY < (mineY+5) && tempY > (mineY-5)){
+				if(this.robots.disbots[i].armor == 1){
+					this.robots.disbots[i].armor = 0;
+					this.deleteMine(j);
+					//var explode[this.towers.mineTowers.length]=j//add mine to boom queue in case it double kills
+				}
+				else if(this.robots.disbots[i].armor == 0){
+					if(!(this.deleteBot(i, 2))){this.p.scrapCnt = (this.p.scrapCnt + 1);}
+					console.log("dedsbot by mine. Scrapcount: " + this.p.scrapCnt);//reached mine
+					this.deleteMine(j);
+					//var explode[this.towers.mineTowers.length]=j//add mine to boom queue in case it double kills
+				}
+			}
+		}
+	}
 };
 
 //gamestate function to move bots
@@ -626,12 +769,6 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.sbots[i].bot);
 			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
 			this.robots.sbots.length--;
-			this.home--;
-		}else if(this.robots.sbots[i].health<=0){
-			document.getElementById("game_panel").removeChild(this.robots.sbots[i].bot);
-			while((i+1) < this.robots.sbots.length){this.robots.sbots[i]=this.robots.sbots[++i];}
-			this.robots.sbots.length--;
-			this.scrapCnt++;
 		}
 	}
 	for(var i=0;i<this.robots.disbots.length;i++){
@@ -639,12 +776,6 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.disbots[i].bot);
 			while((i+1) < this.robots.disbots.length){this.robots.disbots[i]=this.robots.disbots[++i];}
 			this.robots.disbots.length--;
-			this.home--;
-		}else if(this.robots.disbots[i].health<=0){
-			document.getElementById("game_panel").removeChild(this.robots.disbots[i].bot);
-			while((i+1) < this.robots.disbots.length){this.robots.disbots[i]=this.robots.disbots[++i];}
-			this.robots.disbots.length--;
-			this.scrapCnt++;
 		}
 	}
 	for(var i=0;i<this.robots.zbots.length;i++){
@@ -652,36 +783,13 @@ Gamestate.prototype.robotMove = function() {
 			document.getElementById("game_panel").removeChild(this.robots.zbots[i].bot);
 			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
 			this.robots.zbots.length--;
-			this.home--;
-		}else if(this.robots.zbots[i].health<=0){
-			document.getElementById("game_panel").removeChild(this.robots.zbots[i].bot);
-			while((i+1) < this.robots.zbots.length){this.robots.zbots[i]=this.robots.zbots[++i];}
-			this.robots.zbots.length--;
-			this.scrapCnt++;
 		}
 	}
+	/******************************NEED TO RELOCATE**********************************************/
+	this.prox();
+	if(this.isLost()){console.log("Game Over Man!\n");}
 };
-/*
-//gamestate function to check for mine/bot proximity detonate bombs break bots
-//currently only testing for minetower proximity...
-Gamestate.prototype.prox = function() {
-	var expMine[]
-	var i;
-	for(i=0;i<this.robots.disbots.length;i++){
-		for(var j=0;j<this.towers.mineTowers.length;j++){//adjust for proximity not exact location...
-			if(this.robots.disbots[i].loc[0] == this.towers.mineTowers[j].xPos && this.robots.disbots[i].loc[1] == this.towers.mineTowers[j].yPos){
-				//add mine to the delete array for later in case it hits multiple bots
-				//expMine[expMine.length] = this.towers.mineTowers[j];
-				//this.robots.disbots[i].explode();
-			}
-		}
-	}
-	//deleting triggered mines
-	//for(i = 0; i <expMine.length; i++)... delete each bot in expMine[i]
-	//gain scraps
-	this.p.scrapCnt += 1;
-};
-*/
+
 function robotEngine(difficulty,gs){
 	var random = Math.random();
 	if(random<=difficulty){
@@ -794,51 +902,4 @@ function Visual(){
 		this.zbotFlip[i].style.height="100%";
 		this.zbotFlip[i].src=("/zbot_flip?num="+i);
 	}
-	
-	this.clyveRight=[];
-	for(var i=0;i<8;i++){
-		this.clyveRight[i]=document.createElement("IMG");
-		this.clyveRight[i].style.height="100%";
-		this.clyveRight[i].src=("/clyve_right?num="+i);
-	}
-	
-	this.clyveLeft=[];
-	for(var i=0;i<8;i++){
-		this.clyveLeft[i]=document.createElement("IMG");
-		this.clyveLeft[i].style.height="100%";
-		this.clyveLeft[i].src=("/clyve_left?num="+i);
-	}
-	
-	this.mineExplosion=[];
-	for(var i=0;i<6;i++){
-		this.mineExplosion[i]=document.createElement("IMG");
-		this.mineExplosion[i].style.height="100%";
-		this.mineExplosion[i].src=("/mineExplosion?num="+i);
-	}
-	
-	this.guntower=document.createElement("IMG");
-	this.guntower.style.height="100%";
-	this.guntower.src=("/tower?type=guntower");
-	
-	this.mine=document.createElement("IMG");
-	this.mine.style.height="100%";
-	this.mine.src=("/tower?type=mine");
-	
-	this.flametower=document.createElement("IMG");
-	this.flametower.style.height="100%";
-	this.flametower.src=("/tower?type=flametower");
-}
-
-//takes values as % terminated string
-function rangeFinder(x1,y1,x2,y2){
-		if(x2&&y2){
-			var tempX2 = x2.split("%");
-			var tempY2 = y2.split("%");
-			
-			triX = Math.abs(x1 - tempX2[0]);
-			triY = Math.abs(y1 - tempY2[0]);
-			
-			return (Math.sqrt( Math.pow(triX,2) + Math.pow(triY,2) ) );
-		}
-		else return 100;
 }

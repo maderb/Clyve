@@ -21,7 +21,7 @@ $.getScript("/objects", function(){
 					robotEngine(gs.difficulty,gs);
 				
 				for(i=0;gs.towers.mineTowers[i];i++){
-						gs.towers.mineTowers[i].attackIncoming(gs);
+						gs.towers.mineTowers[i].attackIncoming(gs,i);
 				}
 				for(i=0;i<gs.towers.gunTowers[i];i++){
 						gs.towers.gunTowers[i].attackIncoming(gs);					
