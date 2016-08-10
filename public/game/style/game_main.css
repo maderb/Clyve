@@ -1,13 +1,19 @@
 #home{
 	position:absolute;
-	left:50%;
+	left:48%;
 	top:50%;
-	width:3em;
-	height:3.75em;
-	background-color:black;
+	width:10em;
+	height:10em;
 	color:white;
-	transform:translate(-50%,-50%);
+	transform:translate(-50%,-100%);
 	z-index:150;
+}
+#home *{
+	position:absolute;
+	left:50%;
+	top:0%;
+	height:100%;
+	transform:translate(-50%,0%);
 }
 
 #background{
@@ -48,4 +54,13 @@
 	left:0%;
 	height:75%;
 	transform:translate(0%,0%);
+}
+
+#GameStatus{
+	position:absolute;
+	width:20%;
+	left:100%;
+	border:1px solid black;
+}
+.numbub{
 }

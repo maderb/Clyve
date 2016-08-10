@@ -1,9 +1,18 @@
 <div ID="player"></div>
-<div ID="home"></div>
+<div ID="home"><IMG SRC="/house"/></div>
 
 <IMG ID="background" SRC="/background"></IMG>
+
+<DIV ID="GameStatus">
+	<TABLE>
+		<TR><TD>Scrap: </TD>		<TD ID="scrap_track"></TD></TR>
+		<TR><TD>Home Health:</TD>	<TD ID="health_track"></TD></TR>
+		<TR><TD>Score:</TD>			<TD ID="score_track"></TD></TR>
+	</TABLE>
+</DIV>
+
 <TABLE ID="hotkey"><TR>
-	<TD ID="hot1"><IMG class="hkicon" SRC="/tower?type=mine"/></TD>
-	<TD ID="hot2"><IMG class="hkicon" SRC="/tower?type=guntower"/></TD>
-	<TD ID="hot3"><IMG class="hkicon" SRC="/tower?type=flametower"/></TD>
+	<TD ID="hot1"><IMG class="hkicon" SRC="/tower?type=mine"/><DIV CLASS="numbub">1</DIV></TD>
+	<TD ID="hot2"><IMG class="hkicon" SRC="/tower?type=guntower"/><DIV CLASS="numbub">2</DIV></TD>
+	<TD ID="hot3"><IMG class="hkicon" SRC="/tower?type=flametower"/><DIV CLASS="numbub">3</DIV></TD>
 </TR></TABLE>

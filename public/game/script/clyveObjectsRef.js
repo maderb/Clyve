@@ -181,6 +181,8 @@ Robot.prototype.move = function(gs){
 	document.getElementById(this.towerName).style.left = x;
 	document.getElementById(this.towerName).style.top = y;
 	
+	$("#"+this.towerName).zIndex=tempY;
+	
 	return 0;
 };
 Robot.prototype.quadrantFinder=function(x,y){
@@ -348,6 +350,8 @@ zbot.prototype.move=function(gs){
 	
 	document.getElementById(this.towerName).style.left = x;
 	document.getElementById(this.towerName).style.top = y;
+
+	$("#"+this.towerName).zIndex=tempY;
 	
 	return 0;
 }
@@ -436,7 +440,6 @@ function mineTower(x, y, gs){
 	this.explode=0;
 	
 	//likely have to sepperate these parts...107-119 as well as the other towers
-	console.log("create " +this.towerName );
 	this.tower = document.createElement("DIV");
 	this.tower.id = this.towerName;
 	document.getElementById("game_panel").appendChild(this.tower);
@@ -449,6 +452,8 @@ function mineTower(x, y, gs){
 	
 	this.towerDesign = gs.visualStore.mine.cloneNode();
 	this.tower.appendChild(this.towerDesign);
+	
+	this.tower.style.zIndex='"'+y+'"';
 }
 mineTower.prototype.attackIncoming=function(gs,j){
 	for(var i=0;gs.robots.zbots[i];i++){
@@ -489,7 +494,6 @@ function gunTower(x, y, gs){
 	this.range=20;
 	this.cooldown=25;
 	
-	console.log("create "+this.towerName);
 	this.tower = document.createElement("DIV");
 	this.tower.id=this.towerName;
 	document.getElementById("game_panel").appendChild(this.tower);
@@ -500,8 +504,10 @@ function gunTower(x, y, gs){
 	this.tower.style.top = y+"%";
 	this.tower.style.transform = "translate(-50%,-50%)"
 	
-	var towerDesign = gs.visualStore.guntower.cloneNode();
-	this.tower.appendChild(towerDesign);
+	this.towerDesign = gs.visualStore.guntower.cloneNode();
+	this.tower.appendChild(this.towerDesign);
+	
+	this.tower.style.zIndex='"'+y+'"';
 }
 gunTower.prototype.attackIncoming=function(gs){
 	this.cooldown--;
@@ -534,7 +540,6 @@ function flameTower(x, y, gs){
 	this.range=10;
 	this.cooldown=30;
 	
-	console.log("create "+this.towerName);
 	this.tower = document.createElement("DIV");
 	this.tower.id=this.towerName;
 	document.getElementById("game_panel").appendChild(this.tower);
@@ -545,14 +550,15 @@ function flameTower(x, y, gs){
 	this.tower.style.top = y+"%";
 	this.tower.style.transform = "translate(-50%,-50%)"
 	
-	var towerDesign = gs.visualStore.flametower.cloneNode();
-	this.tower.appendChild(towerDesign);
+	this.towerDesign = gs.visualStore.flametower.cloneNode();
+	this.tower.appendChild(this.towerDesign);
+	
+	this.tower.style.zIndex='"'+y+'"';
 }
 flameTower.prototype.attackIncoming=function(gs){
 	this.cooldown--;
 	if(this.cooldown < 1){
 		this.cooldown=25;
-		console.log("FIRE!");
 		for(var i=0;gs.robots.disbots[i];i++){
 			if(rangeFinder(this.xPos,this.yPos,gs.robots.disbots[i].loc[0],gs.robots.disbots[i].loc[1]) < this.range){
 				gs.robots.disbots[i].health-=13;		
@@ -575,8 +581,8 @@ flameTower.prototype.attackIncoming=function(gs){
 //uses: gamestate.p.moveR() to move right etc...
 function Gamestate (type) {
 	this.type = type;
-	this.home = 3; //This is the home's hitpoints.
-	this.difficulty = .02; //higher=more difficult
+	this.home = 10; //This is the home's hitpoints.
+	
 	this.p = new Clyve("player");
 	
 	this.scrapCnt=15;
@@ -602,8 +608,21 @@ function Gamestate (type) {
 	this.visualStore=new Visual();
 }
 
+Gamestate.prototype.setDifficulty=function(difficulty){
+	if(difficulty==="hard"){
+		this.difficulty = .02; //highest
+		this.difficultyRamping=.006;
+	}else if(difficulty==="medium"){
+		this.difficulty = .015; //moderate difficulty
+		this.difficultyRamping=.005;
+	}else{
+		this.difficulty = .01;//super easy... too easy
+		this.difficultyRamping=.004;
+	}
+}
+
 Gamestate.prototype.removeMineTower=function(towers,i){
-	console.log("REMOVE MINETOWER"+i);
+	
 	document.getElementById("game_panel").removeChild(towers[i].tower);
 	while((i+1)<towers.length){towers[i]=towers[i+1];i++;}
 	towers.length--;

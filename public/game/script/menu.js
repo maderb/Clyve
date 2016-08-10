@@ -15,6 +15,7 @@ $(document).ready(function(){
 				if(data.status!=1){
 					document.getElementById("status_box").innerHTML="Failed to successfully authenticate user.";
 				}else{
+					gs.setDifficulty($("#difficulty_setter").val());
 					$("#game_panel").load("/playClyve");
 				}
 			}

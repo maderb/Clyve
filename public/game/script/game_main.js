@@ -1,6 +1,8 @@
 var username="";
 var password="";
 
+var gs=null;
+
 $.getScript("/menu", function(){
 $.getScript("/objects", function(){
 
@@ -10,32 +12,53 @@ $.getScript("/objects", function(){
 			var moveYIncrement=moveXIncrement*($("#game_panel").width() / $("#game_panel").height());
 			
 			//create instance of Clyve from clyveObjectsRef.js. type="player"
-			var gs = new Gamestate("gamestate");
+			gs = new Gamestate("gamestate");
 
 			//GAME LOOP: REFRESH RATE 33hz
 			setInterval(function(){
-				if(gs.score % 15==0){
-					gs.score++;
-					gs.difficulty+=.005;
-					console.log(gs.difficulty);
+				if(gs.home <= 0){
+					var gameOver = document.createElement("DIV");
+					gameOver.style.position="absolute";
+					gameOver.style.top="50%";
+					gameOver.style.left="50%";
+					gameOver.style.transform="translate(-50%,-50%)";
+					gameOver.style.backgroundColor="black";
+					gameOver.style.color="white";
+					gameOver.style.textAlign="center";
+					gameOver.innerHTML='<h1>GAME OVER!</h1><h3>Score: '+ gs.score +'</h3>';
+					gameOver.style.zIndex="1000"
+					document.getElementById("game_panel").appendChild(gameOver);
+					gs.home=1000;
 				}
 				
-				playerMove();
-				gs.p.playerAnimation(gs);
-				gs.robotMove();
-				if(document.getElementById("player"))
-					robotEngine(gs.difficulty,gs);
-				
-				for(i=0;gs.towers.mineTowers[i];i++){
-						gs.towers.mineTowers[i].attackIncoming(gs,i);
+				if(gs.home<1000){
+					if($("#score_track")){
+						$("#scrap_track").html(gs.scrapCnt);
+						$("#health_track").html(gs.home);
+						$("#score_track").html(gs.score);
+					}
+					
+					if(gs.score % 15==0){
+						gs.score++;
+						gs.difficulty+=gs.difficultyRamping;
+					}
+						
+					playerMove();
+					gs.p.playerAnimation(gs);
+					gs.robotMove();
+					if(document.getElementById("player"))
+						robotEngine(gs.difficulty,gs);
+					
+					for(i=0;gs.towers.mineTowers[i];i++){
+							gs.towers.mineTowers[i].attackIncoming(gs,i);
+					}
+					for(i=0;gs.towers.gunTowers[i];i++){
+							gs.towers.gunTowers[i].attackIncoming(gs);					
+					}
+					for(i=0;gs.towers.flameTowers[i];i++){
+							gs.towers.flameTowers[i].attackIncoming(gs);
+					}
 				}
-				for(i=0;gs.towers.gunTowers[i];i++){
-						gs.towers.gunTowers[i].attackIncoming(gs);					
-				}
-				for(i=0;gs.towers.flameTowers[i];i++){
-						gs.towers.flameTowers[i].attackIncoming(gs);
-				}
-				
 			},30);	
 
 			//Listens for keys to be pressed and routes to appropriate function on keypress
@@ -56,17 +79,14 @@ $.getScript("/objects", function(){
 						break;
 					case 49:
 						if(!gs.genTower("mineTower"))
-							console.log("Insufficient Scraps");
 						document.getElementById("hot1").style.backgroundColor="black";
 						break;
 					case 50:
 						if(!gs.genTower("gunTower"))
-							console.log("Insufficient Scraps");
 						document.getElementById("hot2").style.backgroundColor="black";
 						break;
 					case 51:
 						if(!gs.genTower("flameTower"))
-							console.log("Insufficient Scraps");
 						document.getElementById("hot3").style.backgroundColor="black";
 				}
 			});
