@@ -40,3 +40,12 @@
 	width:3em;
 	height:3em;
 }
+
+.hkicon{
+	position:relative;
+	
+	top:0%;
+	left:0%;
+	height:75%;
+	transform:translate(0%,0%);
+}
