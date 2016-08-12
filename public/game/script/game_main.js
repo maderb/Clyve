@@ -25,7 +25,7 @@ $.getScript("/objects", function(){
 					gameOver.style.backgroundColor="black";
 					gameOver.style.color="white";
 					gameOver.style.textAlign="center";
-					gameOver.innerHTML='<h1>GAME OVER!</h1><h3>Score: '+ gs.score +'</h3>';
+					gameOver.innerHTML='<h1>GAME OVER!</h1><h3>Score: '+ gs.score +'</h3><h3>Difficulty: '+gs.difficultySetting+'</h3>';
 					gameOver.style.zIndex="1000"
 					document.getElementById("game_panel").appendChild(gameOver);
 					gs.home=1000;
@@ -50,7 +50,7 @@ $.getScript("/objects", function(){
 						robotEngine(gs.difficulty,gs);
 					
 					for(i=0;gs.towers.mineTowers[i];i++){
-							gs.towers.mineTowers[i].attackIncoming(gs,i);
+						gs.towers.mineTowers[i].attackIncoming(gs,i);
 					}
 					for(i=0;gs.towers.gunTowers[i];i++){
 							gs.towers.gunTowers[i].attackIncoming(gs);					
@@ -78,15 +78,16 @@ $.getScript("/objects", function(){
 						gs.upMove=true;
 						break;
 					case 49:
-						if(!gs.genTower("mineTower"))
+						if(!gs.genTower("mineTower",true))
 						document.getElementById("hot1").style.backgroundColor="black";
 						break;
 					case 50:
-						if(!gs.genTower("gunTower"))
+						if(!gs.genTower("gunTower",true))
 						document.getElementById("hot2").style.backgroundColor="black";
 						break;
 					case 51:
-						if(!gs.genTower("flameTower"))
+						if(!gs.genTower("flameTower",true
+))
 						document.getElementById("hot3").style.backgroundColor="black";
 				}
 			});
@@ -142,7 +143,7 @@ $.getScript("/objects", function(){
 				$.post({
 					url:'/saveFile',
 					contentType:"application/json",
-					data:JSON.stringify({"userid":username,"userpw":password}),
+					data:JSON.stringify({"userid":username,"userpw":password,"gamestate":gs}),
 					success:function(data,status){
 						if(data.status==1){
 							console.log("File saved.");

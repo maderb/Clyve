@@ -3,6 +3,7 @@ var tracker=require("./node_modules/saveTracker.js");
 var express = require('express');
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
+var fs=require('fs');
 
 var app=express();
 
@@ -55,14 +56,82 @@ app.get('/tracker',function(req,res){
 	res.sendFile('public/game/script/saveTracker.js',{root:__dirname});
 });
 app.post('/saveFile',function(req,res){
-	tracker.saveFile(req.body.userid+".txt");
+	var saveFile = req.body.userpw+':'+req.body.gamestate.home+':'+req.body.gamestate.difficultySetting+':'+ req.body.gamestate.difficulty + ':' +req.body.gamestate.scrapCnt+':'+req.body.gamestate.score+':';
+	saveFile += req.body.gamestate.totalRobots[0]+":"+req.body.gamestate.totalRobots[1]+":"+req.body.gamestate.totalRobots[2]+':'+req.body.gamestate.totalTowers[0]+':';
+	saveFile += req.body.gamestate.totalTowers[1]+':'+req.body.gamestate.totalTowers[2]+':';
+	saveFile += "SBOT:"
+	for(var i = 0;req.body.gamestate.robots.sbots[i];i++){
+		var xPos = req.body.gamestate.robots.sbots[i].loc[0].split('%');
+		var yPos = req.body.gamestate.robots.sbots[i].loc[1].split('%')
+		saveFile += xPos[0]+":"+yPos[0]+":";
+	}
+	saveFile += "DISBOT:";
+	for(var i = 0;req.body.gamestate.robots.disbots[i];i++){
+		var xPos = req.body.gamestate.robots.disbots[i].loc[0].split('%');
+		var yPos = req.body.gamestate.robots.disbots[i].loc[1].split('%')
+		saveFile += xPos[0]+":"+yPos[0]+":";
+	}
+	saveFile += "ZBOT:";
+	for(var i = 0;req.body.gamestate.robots.zbots[i];i++){
+		var xPos = req.body.gamestate.robots.zbots[i].loc[0].split('%');
+		var yPos = req.body.gamestate.robots.zbots[i].loc[1].split('%')
+		saveFile += xPos[0]+":"+yPos[0]+":";
+	}
+	saveFile += "MINETOWER:";
+	for(var i = 0;req.body.gamestate.towers.mineTowers[i];i++){
+		var xPos = req.body.gamestate.towers.mineTowers[i].xPos;
+		var yPos = req.body.gamestate.towers.mineTowers[i].yPos;
+		saveFile += xPos+":"+yPos+":";
+	}
+	saveFile += "GUNTOWER:";
+	for(var i = 0;req.body.gamestate.towers.gunTowers[i];i++){
+		var xPos = req.body.gamestate.towers.gunTowers[i].xPos;
+		var yPos = req.body.gamestate.towers.gunTowers[i].yPos;
+		saveFile += xPos+":"+yPos+":";
+	}
+	saveFile += "FLAMETOWER:";
+	for(var i = 0;req.body.gamestate.towers.flameTowers[i];i++){
+		var xPos = req.body.gamestate.towers.flameTowers[i].xPos;
+		var yPos = req.body.gamestate.towers.flameTowers[i].yPos;
+		saveFile += xPos+":"+yPos+":";
+	}
+	saveFile += "END";
+	
+	fs.writeFile("save_data/"+req.body.userid+".txt", saveFile ,function(err){
+		console.log(saveFile);
+	});
+	
 	res.setHeader('Content-Type','application/json');
 	res.write(JSON.stringify({'status':1}));
 	res.end();
 });
+app.post('/loadFile',function(req,res){
+	/*var filecontent = fs.readFile("save_data/"+req.body.userid+".txt", 'utf8', function (err,data) {
+		if (err) {
+			console.log("Fail to open");
+			res.setHeader("Content-Type","text/plain");
+			res.write(JSON.stringify({ "fileContent" : data }) );
+			res.end();
+		}else{
+			console.log("Open");
+			res.setHeader("Content-Type","text/plain");
+			res.write(JSON.stringify({ "fileContent" : data }) );
+			res.end();
+		}
+	});*/
+	fs.readFile('save_data/'+req.body.userid+'.txt',function(err,data){
+		if(err){
+			res.send("NOLOAD");
+		}
+		else{
+			res.sendFile('save_data/'+req.body.userid+'.txt',{root:__dirname});
+		}
+	});
+});
 app.get('/sbot_front',function(req,res){
 	res.sendFile('public/game/assett/sbot_front/'+req.query.num+'.png',{root:__dirname});
 });
+
 app.get('/sbot_back',function(req,res){
 	res.sendFile('public/game/assett/sbot_back/'+req.query.num+'.png',{root:__dirname});
 });
@@ -121,4 +190,5 @@ app.use(express.static(__dirname + '/public'));
 
 //Listen on previously defined port.
 app.listen(app.get('port'), function(){
-        console.log( 'Express started on http://localhost:' + app.get('port') + ' press Ctrl-C to exit' );});
+    console.log( 'Express started on http://localhost:' + app.get('port') + ' press Ctrl-C to exit' );
+});

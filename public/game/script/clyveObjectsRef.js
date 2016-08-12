@@ -207,7 +207,7 @@ function zbot (x, y, gs) {
 	
 	this.zigCount=0;
 	
-	this.towerName = "zbot" + gs.totalRobots[0]++;
+	this.towerName = "zbot" + gs.totalRobots[2]++;
 	
 	Robot.call(this,x,y,gs);
 }
@@ -395,7 +395,7 @@ sbot.prototype.frameUpdate=function(gs){
 function disbot (x, y, gs) {
 	this.speed=.1;
 	this.health=2000*gs.difficulty;
-	this.towerName = "disbot" + gs.totalRobots[0]++;
+	this.towerName = "disbot" + gs.totalRobots[1]++;
 	Robot.call(this,x,y,gs);
 }
 
@@ -585,6 +585,8 @@ function Gamestate (type) {
 	
 	this.p = new Clyve("player");
 	
+	this.difficultySetting;
+	
 	this.scrapCnt=15;
 	this.score=0;
 	
@@ -610,12 +612,15 @@ function Gamestate (type) {
 
 Gamestate.prototype.setDifficulty=function(difficulty){
 	if(difficulty==="hard"){
+		this.difficultySetting="Hard";
 		this.difficulty = .02; //highest
 		this.difficultyRamping=.006;
 	}else if(difficulty==="medium"){
+		this.difficultySetting="Medium";
 		this.difficulty = .015; //moderate difficulty
 		this.difficultyRamping=.005;
 	}else{
+		this.difficultySetting="Easy";
 		this.difficulty = .01;//super easy... too easy
 		this.difficultyRamping=.004;
 	}
@@ -655,28 +660,31 @@ Gamestate.prototype.genBots = function(robotName, posx, posy) {
 
 //gamestate function to create robots.
 //updated to pass in x, y
-Gamestate.prototype.genTower = function(typeName) {
+Gamestate.prototype.genTower = function(typeName, deduct) {
 		var posx = this.p.loc[0];
 		var posy = this.p.loc[1];		
 		switch(typeName){
 			case "mineTower":
 				if(this.scrapCnt > 0){//if clyve has the scraps
 					this.towers.mineTowers[this.towers.mineTowers.length] = new mineTower(posx, posy, this);
-					this.scrapCnt -= 1; //arbitrary value, scrap consumption will change
+					if(deduct==true)
+						this.scrapCnt -= 1; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "gunTower":
 				if(this.scrapCnt > 9){//if clyve has the scraps
 					this.towers.gunTowers[this.towers.gunTowers.length] = new gunTower(posx, posy, this);
-					this.scrapCnt -= 10; //arbitrary value, scrap consumption will change
+					if(deduct==true)
+						this.scrapCnt -= 10; //arbitrary value, scrap consumption will change
 					return true;
 				}
 				break;
 			case "flameTower":
 				if(this.scrapCnt > 6){//if clyve has the scraps
 					this.towers.flameTowers[this.towers.flameTowers.length] = new flameTower(posx, posy, this);
-					this.scrapCnt -= 7; //arbitrary value, scrap consumption will change
+					if(deduct==true)
+						this.scrapCnt -= 7; //arbitrary value, scrap consumption will change
 					return true;
 				}
 		}
